@@ -310,7 +310,7 @@ paths:
                 - name
                 - phone
 
-  /api/suclient/{identificadorCliente}:
+  /api/suclient/{idClient}:
     get:
       tags:
         - Subscription
@@ -846,7 +846,7 @@ paths:
               required:
                 - suscription
 
-  /api/sususcription/{identificadorSuscripcion}:
+  /api/sususcription/{idSuscription}:
     get:
       tags:
         - Subscription
@@ -1154,7 +1154,7 @@ paths:
               required:
                 - name
 
-  /api/suplan/{identificadorPlan}:
+  /api/suplan/{idPlan}:
     get:
       tags:
         - Subscription
@@ -1424,7 +1424,7 @@ paths:
                 - subject
                 - amount
 
-  /api/transaction/{identificadorTrasaccion}:
+  /api/transaction/{idTrasaction}:
     get:
       tags:
         - Transaction
@@ -1708,7 +1708,7 @@ paths:
               - date_closing_event
               - date_payment
     
-  /api/event/{identificadorEvento}:
+  /api/event/{idEvent}:
     get:
       tags:
         - Event
@@ -1915,7 +1915,7 @@ paths:
                 - phone
                 - bank
 
-  /api/maclient/{identificadorCliente}:
+  /api/maclient/{idClient}:
     get:
       tags:
         - Marketplace
@@ -2165,7 +2165,7 @@ paths:
                 - percentage
                 - affiliation
 
-  /api/maaffiliation/{identificadorCliente}:
+  /api/maaffiliation/{idClient}:
     get:
       tags:
         - Marketplace
