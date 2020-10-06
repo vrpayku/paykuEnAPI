@@ -2743,6 +2743,10 @@ components:
           description: Transaction number.
           type: string
           example: "204444"
+        verification_key:
+          description:
+          type: string
+          example: "025dcad37e071daa8bfc2df35189009db65692a4ff766856108be1675e870839"
 
     CardSuscriptionResponse:
       description: "Return data from data insertion of a card"
