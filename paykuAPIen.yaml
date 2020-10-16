@@ -214,12 +214,15 @@ paths:
               -H 'Host: BASE_URL' \   
               -d {     
                   "email": "joedoe@gmail.com",
-                  "merchant": [["81b6179e4feeef2b50af71d660f830de", "30000", "item"]],
+                  "merchant": [
+                    ["81b6179e4feeef2b50af71d660f830de", "30000", "item1"],
+                    ["bcf6c06c523d9394be41bc0174c43d1476f274abb342955aac93cc8014737b3b","25000","item2"],
+                    ["3952097d617679f98c587bad0b3a781d","15000","item3"]
+                  ],
                   "payment": "1",
                   "order": 123,
                   "urlreturn": "https://youwebsite.cl/urlreturn",
                   "urlnotify": "https://youwebsite.cl/urlnotify"
-
                 }'
           - lang: 'PHP'
             source: |
@@ -227,7 +230,11 @@ paths:
                 $body = $client->request('POST', 'https://[base URL]/api/mall', [
                   'json' => [                
                     'email'         => 'joedoe@gmail.com',                 
-                    'merchant'      => [["81b6179e4feeef2b50af71d660f830de", "30000", "item"]],                           
+                    'merchant'      => [
+                      ['81b6179e4feeef2b50af71d660f830de', '30000', 'item1'],
+                      ['bcf6c06c523d9394be41bc0174c43d1476f274abb342955aac93cc8014737b3b','25000','item2'],
+                      ['3952097d617679f98c587bad0b3a781d','15000','item3']
+                    ],                           
                     'payment'       => '1',                                 
                     'order'         => 123,                              
                     'urlreturn'     => 'https://youwebsite.cl/urlreturn',   
@@ -257,7 +264,11 @@ paths:
 
               let data = {
                 email: "joedoe@gmail.com",
-                merchant: [["81b6179e4feeef2b50af71d660f830de", "30000", "item"]],
+                merchant: [
+                  ["81b6179e4feeef2b50af71d660f830de", "30000", "item1"],
+                  ["bcf6c06c523d9394be41bc0174c43d1476f274abb342955aac93cc8014737b3b","25000","item2"],
+                  ["3952097d617679f98c587bad0b3a781d","15000","item3"]
+                ],
                 payment: "1",
                 order: 123,
                 urlreturn: "https://youwebsite.cl/urlreturn",
@@ -281,7 +292,10 @@ paths:
                     description: array containing clients, each client is a file containing its public token, transaction value and description.
                     items:
                       type: array
-                      example: [81b6179e4feeef2b50af71d660f830de,30000,item]
+                      example: 
+                        - [81b6179e4feeef2b50af71d660f830de,30000,item1]
+                        - [bcf6c06c523d9394be41bc0174c43d1476f274abb342955aac93cc8014737b3b,25000,item2]
+                        - [3952097d617679f98c587bad0b3a781d,15000,item3]
                   payment:
                     description: |
                                 Identifier of the payment method.
@@ -303,7 +317,7 @@ paths:
                     format: url
                     example: https://youwebsite.cl/urlnotify
                 required:
-                  - emai
+                  - email
                   - merchant
                   - payment
                   - order
