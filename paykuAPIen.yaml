@@ -328,7 +328,7 @@ paths:
                     example: joedoe@gmail.com
                   merchant:
                     type: array
-                    description: array containing clients, each client is a file containing its public token, transaction value and description.
+                    description: array containing clients, each client is an array is containing its public token, transaction value and description.
                     items:
                       type: array
                       example: 
