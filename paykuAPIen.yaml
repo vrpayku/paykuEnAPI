@@ -63,7 +63,7 @@ info:
     ];
     ksort($data);
     ```
-    Transformación de los parámetros a formato url:
+    Transformation of the parameters to url format:
     ```php
     $i = count($data);
     $array_concat = null;
