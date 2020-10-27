@@ -2,7 +2,7 @@ openapi: 3.0.0
 servers:
   - url: 'https://app.payku.cl/'
     description: Default server
-  - url: 'https://des.payku.cl/'
+  - url: 'https://[base URL]/'
     description: Sandbox server
 info:
   description: |
@@ -33,7 +33,7 @@ info:
       - Authorization: Bearer **TOKEN-PÚBLICO**
 
     # Signature
-    In the case of the subscription and Mall API, an additional layer of security was added 
+    In the case of the subscription, Mall and Customer API, an additional layer of security was added 
     through of a signature that is sent in the request header, to obtain said signature
     is necessary the following:
     
@@ -184,7 +184,7 @@ info:
           </tr>
           <tr>
             <td><strong>Sandbox</strong></td>
-            <td><a href="https://des.payku.cl/api">https://des.payku.cl/api</a></td>
+            <td><a href="https://[base URL]/api">https://[base URL]/api</a></td>
           </tr>
         </tbody>
       </table>
@@ -212,11 +212,158 @@ tags:
     description: It allows our clients to provide the service to a third party of creating transactions and being able to check their status.  
   - name: Subscription
     description: It allows the linking of a plan to Clients, to later make recurring charges automatically, as defined in each plan.
+  - name: Customer
+    description: Allows our clients to create accounts with third parties to carry out transactions.
   - name: Event
     description: It allows the creation of events and later check their status.
   
 paths:
 
+  /api/customer:
+    post:
+      tags:
+        - Customer
+      summary: Third party account creation.
+      description: This method allows the user to create a third party account.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customerPostResponse'
+        '400':
+          description: Request failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '401':
+          description: Incorrect public token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+      x-codeSamples:
+        - lang: 'CURL'
+          source: |
+            curl -X POST \
+            https://BASE_URL/api/customer \
+            -H 'Accept: application/json, text/plain, */*' \
+            -H 'Sign: SIGN  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Content-Type: application/json,application/json' \   
+            -H 'Host: BASE_URL' \   
+            -d {     
+                "email": "joedoe@gmail.com",
+                "first_name": "Joe",
+                "last_name": "Doe",
+                "rut": "111111111",
+                "phone": "912341234",
+                "banco_titular": "Joe Doe",
+                "banco_numerocuenta": "1122334455",
+                "banco_tipocuenta": "1",
+                "banco_codigo": "0001"
+              }'
+        - lang: 'PHP'
+          source: |
+            $client = new \GuzzleHttp\Client();         
+              $body = $client->request('POST', 'https://[base URL]/api/customer', [
+                'json' =>  [
+                  'email'         => 'joedoe@gmail.com',
+                  'first_name'    => 'Joe',
+                  'last_name'     => 'Doe',
+                  'rut'           => '111111111',
+                  'phone'         => '912341234',
+                  'banco_titular'      => 'Joe Doe',
+                  'banco_numerocuenta' => '1122334455',
+                  'banco_tipocuenta'   => '1',
+                  'banco_codigo'       => '0001',
+                ];
+              ])->getBody();           
+            $response = json_decode($body); 
+        - lang: 'JS'
+          source: |
+            const request = async (data) => {
+              const response = await fetch('https://[base URL]/api/customer', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Sign': 'f96ddc14a73a4dd6e009db2514108a3f44832795cd5ac50e6a80fd0b0ae92112',                 
+                  'Authorization': 'Bearer 3952097d617679f98c587bad0b3a781d'  
+                },
+                body: JSON.stringify(data)
+              });
+              const result = await response.json();
+              console.log(result)
+            }
+
+            let data = {
+              "email": "joedoe@gmail.com",
+              "first_name": "Joe",
+              "last_name": "Doe",
+              "rut": "111111111",
+              "phone": "912341234",
+              "banco_titular": "Joe Doe",
+              "banco_numerocuenta": "1122334455",
+              "banco_tipocuenta": "1",
+              "banco_codigo": "0001"
+            };
+
+            request(data);
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  description: Third party email.
+                  type: string
+                  format: email
+                  example: joedoe@gmail.com
+                first_name:
+                  description: Third party first name.
+                  type: string
+                  example: joe
+                last_name:
+                  description: Third party last name.
+                  type: string
+                  example: Doe
+                rut:
+                  description: Third party RUT.
+                  type: string
+                  example: "111111111"
+                phone:
+                  description: Third party phone.
+                  type: string
+                  example: "912341234"
+                banco_titular:
+                  description: Name of the bank account holder.
+                  type: string
+                  example: Joe Doe
+                banco_numerocuenta:
+                  description: Bank account number.
+                  type: string
+                  example: "1122334455"
+                banco_tipocuenta:
+                  description: Bank account type.
+                  type: string
+                  example: "1"
+                banco_codigo:
+                  description: Bank code to which the bank account belongs.
+                  type: string
+                  example: "0001"
+              required:
+                - email
+                - first_name
+                - last_name
+                - rut
+                - phone
+                - banco_titular
+                - banco_numerocuente
+                - banco_tipocuenta
+                - banco_codigo
+  
   /api/mall:
       post:
         tags:
@@ -288,7 +435,7 @@ paths:
           - lang: 'JS'
             source: |
               const request = async (data) => {
-                const response = await fetch('https://des.payku.cl/api/mall', {
+                const response = await fetch('https://[base URL]/api/mall', {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
@@ -339,8 +486,8 @@ paths:
                     description: |
                                 Identifier of the payment method.
                                 - 1 Webpay  
-                    type: string
-                    example: "1"
+                    type: integer
+                    example: 1
                   order:
                     description: identifier of the client's order, this must be unique.
                     type: integer
@@ -422,7 +569,7 @@ paths:
             - lang: 'JS'
               source: |
                 const request = async () => {
-                  const response = await fetch('https://des.payku.cl/api/mall/malld200058ab44739ddee2adcd2f5', {
+                  const response = await fetch('https://[base URL]/api/mall/malld200058ab44739ddee2adcd2f5', {
                     method: 'GET',
                     headers: {
                       'Content-Type': 'application/json',                 
@@ -503,7 +650,7 @@ paths:
         - lang: 'JS'
           source: |
             const request = async (data) => {
-              const response = await fetch('https://des.payku.cl/api/suclient', {
+              const response = await fetch('https://[base URL]/api/suclient', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
@@ -627,7 +774,7 @@ paths:
         - lang: 'JS'
           source: |
             const request = async () => {
-              const response = await fetch('https://des.payku.cl/api/suclient/cla90927fa9b30e1dfffa0', {
+              const response = await fetch('https://[base URL]/api/suclient/cla90927fa9b30e1dfffa0', {
                 method: 'GET',
                 headers: {
                   'Content-Type': 'application/json',
@@ -716,7 +863,7 @@ paths:
         - lang: 'JS'
           source: |
             const request = async (data) => {
-              const response = await fetch('https://des.payku.cl/api/suclient', {
+              const response = await fetch('https://[base URL]/api/suclient', {
                 method: 'PUT',
                 headers: {
                   'Content-Type': 'application/json',
@@ -834,7 +981,7 @@ paths:
         - lang: 'JS'
           source: |
             const request = async () => {
-              const response = await fetch('https://des.payku.cl/api/suclient/cla90927fa9b30e1dfffa0', {
+              const response = await fetch('https://[base URL]/api/suclient/cla90927fa9b30e1dfffa0', {
                 method: 'DELETE',
                 headers: {
                   'Content-Type': 'application/json',
@@ -897,7 +1044,7 @@ paths:
         - lang: 'JS'
           source: |
             const request = async () => {
-              const response = await fetch('https://des.payku.cl/api/suclient/Clients', {
+              const response = await fetch('https://[base URL]/api/suclient/Clients', {
                 method: 'GET',
                 headers: {
                   'Content-Type': 'application/json',
@@ -966,7 +1113,7 @@ paths:
         - lang: 'JS'
           source: |
             const request = async (data) => {
-              const response = await fetch('https://des.payku.cl/api/sususcription', {
+              const response = await fetch('https://[base URL]/api/sususcription', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
@@ -1062,7 +1209,7 @@ paths:
         - lang: 'JS'
           source: |
             const request = async (data) => {
-              const response = await fetch('https://des.payku.cl/api/sutransaction', {
+              const response = await fetch('https://[base URL]/api/sutransaction', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
@@ -1163,7 +1310,7 @@ paths:
         - lang: 'JS'
           source: |
             const request = async () => {
-              const response = await fetch('https://des.payku.cl/api/sususcription/sucaab7865dceaff49d8b', {
+              const response = await fetch('https://[base URL]/api/sususcription/sucaab7865dceaff49d8b', {
                 method: 'GET',
                 headers: {
                   'Content-Type': 'application/json',
@@ -1229,7 +1376,7 @@ paths:
         - lang: 'JS'
           source: |
             const request = async () => {
-              const response = await fetch('https://des.payku.cl/api/sususcription/sucaab7865dceaff49d8b', {
+              const response = await fetch('https://[base URL]/api/sususcription/sucaab7865dceaff49d8b', {
                 method: 'DELETE',
                 headers: {
                   'Content-Type': 'application/json',
@@ -1295,7 +1442,7 @@ paths:
         - lang: 'JS'
           source: |
             const request = async (data) => {
-              const response = await fetch('https://des.payku.cl/api/suinscriptionscards', {
+              const response = await fetch('https://[base URL]/api/suinscriptionscards', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
@@ -1380,7 +1527,7 @@ paths:
         - lang: 'JS'
           source: |
             const request = async (data) => {
-              const response = await fetch('https://des.payku.cl/api/suplan', {
+              const response = await fetch('https://[base URL]/api/suplan', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
@@ -1471,7 +1618,7 @@ paths:
         - lang: 'JS'
           source: |
             const request = async () => {
-              const response = await fetch('https://des.payku.cl/api/suplan/pl29f6ad69fbd594148c39', {
+              const response = await fetch('https://[base URL]/api/suplan/pl29f6ad69fbd594148c39', {
                 method: 'GET',
                 headers: {
                   'Content-Type': 'application/json',
@@ -1532,7 +1679,7 @@ paths:
         - lang: 'JS'
           source: |
             const request = async () => {
-              const response = await fetch('https://des.payku.cl/api/suplan/plans', {
+              const response = await fetch('https://[base URL]/api/suplan/plans', {
                 method: 'GET',
                 headers: {
                   'Content-Type': 'application/json',
@@ -1610,7 +1757,7 @@ paths:
         - lang: 'JS'
           source: |
             const request = async (data) => {
-              const response = await fetch('https://des.payku.cl/api/transaction', {
+              const response = await fetch('https://[base URL]/api/transaction', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',                 
@@ -1745,7 +1892,7 @@ paths:
         - lang: 'JS'
           source: |
             const request = async () => {
-              const response = await fetch('https://des.payku.cl/api/transaction/10ac494c1d8da71d98ea', {
+              const response = await fetch('https://[base URL]/api/transaction/10ac494c1d8da71d98ea', {
                 method: 'GET',
                 headers: {
                   'Content-Type': 'application/json',                 
@@ -1880,7 +2027,7 @@ paths:
         - lang: 'JS'
           source: |
             const request = async (data) => {
-              const response = await fetch('https://des.payku.cl/api/event', {
+              const response = await fetch('https://[base URL]/api/event', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',                 
@@ -2023,7 +2170,7 @@ paths:
         - lang: 'JS'
           source: |
             const request = async (data) => {
-              const response = await fetch('https://des.payku.cl/api/event/98374', {
+              const response = await fetch('https://[base URL]/api/event/98374', {
                 method: 'GET',
                 headers: {
                   'Content-Type': 'application/json',                 
@@ -2103,7 +2250,7 @@ paths:
         - lang: 'JS'
           source: |
             const request = async (data) => {
-              const response = await fetch('https://des.payku.cl/api/maclient', {
+              const response = await fetch('https://[base URL]/api/maclient', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',              
@@ -2230,7 +2377,7 @@ paths:
         - lang: 'JS'
           source: |
             const request = async () => {
-              const response = await fetch('https://des.payku.cl/api/maclient/madb93fc00a2cf6f4449', {
+              const response = await fetch('https://[base URL]/api/maclient/madb93fc00a2cf6f4449', {
                 method: 'GET',
                 headers: {
                   'Content-Type': 'application/json',              
@@ -2293,7 +2440,7 @@ paths:
         - lang: 'JS'
           source: |
             const request = async () => {
-              const response = await fetch('https://des.payku.cl/api/maclient/madb93fc00a2cf6f4449', {
+              const response = await fetch('https://[base URL]/api/maclient/madb93fc00a2cf6f4449', {
                 method: 'DELETE',
                 headers: {
                   'Content-Type': 'application/json',              
@@ -2368,7 +2515,7 @@ paths:
         - lang: 'JS'
           source: |
             const request = async (data) => {
-              const response = await fetch('https://des.payku.cl/api/maaffiliation', {
+              const response = await fetch('https://[base URL]/api/maaffiliation', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',              
@@ -2480,7 +2627,7 @@ paths:
         - lang: 'JS'
           source: |
             const request = async () => {
-              const response = await fetch('https://des.payku.cl/api/maaffiliation/sucaab7865dceaff49d8b3', {
+              const response = await fetch('https://[base URL]/api/maaffiliation/sucaab7865dceaff49d8b3', {
                 method: 'GET',
                 headers: {
                   'Content-Type': 'application/json',              
@@ -2544,7 +2691,7 @@ paths:
         - lang: 'JS'
           source: |
             const request = async () => {
-              const response = await fetch('https://des.payku.cl/api/maaffiliation/sucaab7865dceaff49d8b3', {
+              const response = await fetch('https://[base URL]/api/maaffiliation/sucaab7865dceaff49d8b3', {
                 method: 'DELETE',
                 headers: {
                   'Content-Type': 'application/json',              
@@ -3493,7 +3640,7 @@ components:
         url:
           type: string
           description: URL has redirect user. 
-          example: "https://des.payku.cl/gateway/mall/malld200058ab44739ddee2adcd2f5"
+          example: "https://[base URL]/gateway/mall/malld200058ab44739ddee2adcd2f5"
 
     IdentifierMallResponse:
       description: "Status return data of a transaction"
@@ -3545,6 +3692,23 @@ components:
               type: string
               description: Currency. 
               example: "CLP"
+
+    customerPostResponse:
+      description: "Return data from the creation of a Customer transaction"
+      type: object
+      properties:
+        status:
+          type: string
+          description: Status of the request. 
+          example: 'success'
+        usuario:
+          type: string
+          description: User identifier. 
+          example: 'us500f77e28752dc937e7d'
+        cuenta:
+          type: string
+          description: Account identifier.  
+          example: "cu245a17e00f7ce3715f5a"
 
     Error:
       type: object
