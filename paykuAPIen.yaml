@@ -262,7 +262,7 @@ paths:
                 "banco_titular": "Joe Doe",
                 "banco_numerocuenta": "1122334455",
                 "banco_tipocuenta": "1",
-                "banco_codigo": "0001"
+                "banco_codigo": "001"
               }'
         - lang: 'PHP'
           source: |
@@ -277,7 +277,7 @@ paths:
                   'banco_titular'      => 'Joe Doe',
                   'banco_numerocuenta' => '1122334455',
                   'banco_tipocuenta'   => '1',
-                  'banco_codigo'       => '0001',
+                  'banco_codigo'       => '001',
                 ];
               ])->getBody();           
             $response = json_decode($body); 
@@ -306,7 +306,7 @@ paths:
               "banco_titular": "Joe Doe",
               "banco_numerocuenta": "1122334455",
               "banco_tipocuenta": "1",
-              "banco_codigo": "0001"
+              "banco_codigo": "001"
             };
 
             request(data);
@@ -346,13 +346,36 @@ paths:
                   type: string
                   example: "1122334455"
                 banco_tipocuenta:
-                  description: Bank account type.
+                  description: |
+                    Bank account type.
+                    - 1 Checking account 
+                    - 2 Vista/Cuenta RUT   
+                    - 3 Saving account
                   type: string
                   example: "1"
                 banco_codigo:
-                  description: Bank code to which the bank account belongs.
+                  description: |
+                    Bank code to which the bank account belongs.
+                    - 001 Banco de Chile
+                    - 009 Banco Internacional
+                    - 014 Scotiabank Chile
+                    - 016 Banco de crédito e inversiones (BCI)
+                    - 027 Banco Corpbanca
+                    - 028 Banco Bice
+                    - 031 HSBC Bank Chile
+                    - 037 Banco Santander Chile
+                    - 039 Itaú Corpbanca
+                    - 049 Banco Security
+                    - 051 Banco Falabella
+                    - 053 Banco Ripley
+                    - 054 Rabobank Chile
+                    - 055 Banco Consorcio
+                    - 056 Banco Penta
+                    - 057 Banco Paris
+                    - 504 Banco Bilbao Vizcaya Argentaria Chile (BBVA)
+                    - 059 Banco BTG Pactual Chile
                   type: string
-                  example: "0001"
+                  example: "001"
               required:
                 - email
                 - first_name
@@ -2302,7 +2325,11 @@ paths:
                       type: string
                       example: "1234"
                     type:
-                      description: Account type.(1 = Checking account , 2 = Vista/Cuenta RUT, 3 = Saving account)
+                      description: |
+                        Account type.
+                        - 1 Checking account 
+                        - 2 Vista/Cuenta RUT 
+                        - 3 Saving account
                       type: string
                       example: "1"
                     num:
@@ -3557,7 +3584,11 @@ components:
               type: string
               example: "1234"
             type:
-              description: Account type.(1 = Checking account , 2 = Vista/Cuenta RUT, 3 = Saving account)
+              description: | 
+                Account type.
+                - 1 Checking account
+                - 2 = Vista/Cuenta RUT
+                - 3 = Saving account
               type: string
               example: "1"
             num:
