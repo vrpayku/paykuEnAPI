@@ -1,12 +1,12 @@
 openapi: 3.0.0
 servers:
-  - url: 'https://app.payku.cl/'
+  - url: "https://app.payku.cl/"
     description: Default server
-  - url: 'https://[base URL]/'
+  - url: "https://[base URL]/"
     description: Sandbox server
 info:
   description: |
-    
+
     # Introduction
     Welcome to the Payku API. You can use our API to access the different
     Payku endpoints, where you can generate and manage payments through different
@@ -36,7 +36,7 @@ info:
     In the case of the subscription, Mall and Customer API, an additional layer of security was added 
     through of a signature that is sent in the request header, to obtain said signature
     is necessary the following:
-    
+
     The Request Path must be concatenated in url format along with all the request 
     parameters, which must be ordered alphabetically by key, such that key = value. 
     Therefore, if the client email value is "example@domain.com" the correct format 
@@ -168,7 +168,7 @@ info:
 
     # API access
     If you have a payku account, you can access the REST API through the following endpoints:
-    
+
     <div class="content">
       <table class="center">
         <thead>
@@ -200,24 +200,451 @@ info:
     email: contacto@payku.cl
   license:
     name: Apache 2.0
-    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
   x-logo:
-    url: 'https://storage.googleapis.com/storage-payku-prd/public/img/payku2020_2.svg'
+    url: "https://storage.googleapis.com/storage-payku-prd/public/img/payku2020_2.svg"
 tags:
   - name: Transaction
     description: It allows the creation of transactions and later check their status.
   - name: Marketplace
     description: It allows the registration of clients, to later carry out the distribution according to the assigned percentage.
   - name: Mall
-    description: It allows our clients to provide the service to a third party of creating transactions and being able to check their status.  
+    description: It allows our clients to provide the service to a third party of creating transactions and being able to check their status.
   - name: Subscription
     description: It allows the linking of a plan to Clients, to later make recurring charges automatically, as defined in each plan.
+  - name: Consumption Subscription
+    description: |
+      It is the set of methods that will allow our users to create clients, plans, subscriptions and carry out consumer plan transactions.
+
+      The main use of these methods is to make one-time charges to a customer for a service or product, such as hiring a delivery service for a product or the purchase of a particular product.
   - name: Customer
     description: Allows our clients to create accounts with third parties to carry out transactions.
   - name: Event
     description: It allows the creation of events and later check their status.
-  
+
 paths:
+  /api/suclient/:
+    post:
+      tags:
+        - Consumption transaction
+      summary: Insert data to a Client
+      description: This method allows the insertion of Client data.
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminClientResponse"
+        "400":
+          description: Request failed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+        "401":
+          description: Incorrect public token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
+      x-codeSamples:
+        - lang: "CURL"
+          source: |
+            curl -X POST \
+            https://BASE_URL/api/suclient \
+            -H 'Accept: application/json, text/plain, */*' \
+            -H 'Sign: SIGN  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Content-Type: application/json,application/json' \   
+            -H 'Host: BASE_URL' \   
+            -d {     
+                "email": "joedoe@gmail.com",
+                "name": "Joe Doe",
+                "phone": "923122312",
+                "address": "Moneda 101",
+                "country": "Chile",
+                "region": "Metropolitana",
+                "city": "Santiago",
+                "postal_code": "850000
+              }'
+        - lang: "PHP"
+          source: |
+            $client = new \GuzzleHttp\Client();         
+              $body = $client->request('POST', 'https://[base URL]/api/suclient', [
+                'json' => [                
+                  'email' => 'joedoe@gmail.cl', 
+                  'name' => 'Joe Doe', 
+                  'phone' => '923122312', 
+                  'address' => 'Moneda 101', 
+                  'country' => 'Chile', 
+                  'region' => 'Metropolitana', 
+                  'city' => 'Santiago', 
+                  'postal_code' => '850000',
+                  ],  
+                'headers' => [                 
+                  'Sign' => '0d04820b87c80f79a89235fcd256d9b6cddee2fc15fa50034c1903370f3de8c6',                 
+                  'Authorization' => 'Bearer 8c872egfdg996f8b418c872e996f8b418c872e996f8b41'              
+                ]           
+              ])->getBody();           
+            $response = json_decode($body);
+        - lang: "JS"
+          source: |
+            const request = async (data) => {
+              const response = await fetch('https://[base URL]/api/suclient', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Sign': '0d04820b87c80f79a89235fcd256d9b6cddee2fc15fa50034c1903370f3de8c6',                 
+                  'Authorization': 'Bearer 8c872egfdg996f8b418c872e996f8b418c872e996f8b41'  
+                },
+                body: JSON.stringify(data)
+              });
+              const result = await response.json();
+              console.log(result)
+            }
+
+            let data = {
+              email: "joedoe@gmail.com",
+              name: "Joe Doe",
+              phone: "923122312",
+              address: "Moneda 101",
+              country: "Chile",
+              region: "Metropolitana",
+              city: "Santiago",
+              postal_code: "850000"
+            };
+
+            request(data);
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  description: Client email.
+                  type: string
+                  format: email
+                  example: joedoe@gmail.com
+                name:
+                  description: Client name
+                  type: string
+                  example: "Joe Doe"
+                phone:
+                  description: Client phone.
+                  type: string
+                  example: "923122312"
+                address:
+                  description: Client address.
+                  type: string
+                  example: "Moneda 101"
+                country:
+                  description: Client country.
+                  type: string
+                  example: "Chile"
+                region:
+                  description: Client region.
+                  type: string
+                  example: "Metropolitana"
+                city:
+                  description: Client city.
+                  type: string
+                  example: "Santiago"
+                postal_code:
+                  description: Client Zip Code.
+                  type: string
+                  example: "850000"
+              required:
+                - email
+                - name
+                - phone
+
+  /api/suplan/:
+    post:
+      tags:
+        - Consumption transaction
+      summary: Insert the data of a plan.
+      description: This method allows the insertion of data for the creation of a plan.
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanResponse"
+        "400":
+          description: Request failed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+        "401":
+          description: Incorrect public token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
+      x-codeSamples:
+        - lang: "CURL"
+          source: |
+            curl -X POST \
+            https://BASE_URL/api/suplan \
+            -H 'Accept: application/json, text/plain, */*' \
+            -H 'Sign: SIGN  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Content-Type: application/json,application/json' \   
+            -H 'Host: BASE_URL' \   
+            -d {     
+                "name": "Test plan",
+                "description": "Test Plan"
+              }'
+        - lang: "PHP"
+          source: |
+            $client = new \GuzzleHttp\Client();         
+              $body = $client->request('POST', 'https:// [base URL]/api/suplan', [             
+                'json' => [       
+                  'name' => 'Test plan',    
+                  'description' => 'Test Plan'         
+                  ],             
+                  'headers' => [                 
+                    'Sign' => '0d04820b87c80f79a89235fcd256d9b6cddee2fc15fa50034c1903370f3de8c6',                 
+                    'Authorization' => 'Bearer 8c872egfdg996f8b418c872e996f8b418c872e996f8b41'              ]           
+                  ])->getBody();           
+                $response = json_decode($body);
+        - lang: "JS"
+          source: |
+            const request = async (data) => {
+              const response = await fetch('https://[base URL]/api/suplan', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Sign': '0d04820b87c80f79a89235fcd256d9b6cddee2fc15fa50034c1903370f3de8c6',                 
+                  'Authorization': 'Bearer 8c872egfdg996f8b418c872e996f8b418c872e996f8b41'  
+                },
+                body: JSON.stringify(data)
+              });
+              const result = await response.json();
+              console.log(result)
+            }
+
+            let data = {
+              name: "Test plan",
+              description: "Test Plan"
+            };
+
+            request(data);
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: Plan name.
+                  type: string
+                  example: Test plan
+                description:
+                  description: Plan description.
+                  type: string
+                  example: Test Plan
+              required:
+                - name
+
+  /api/sususcription/:
+    post:
+      tags:
+        - Consumption transaction
+      summary: Insert data for subscription
+      description: This method allows the user of a Payku account to generate a subscription to a subscription plan of a fixed amount or subscription to a consumer plan to one of its clients, it is important to note that when making this request for the first time, a charge of $ 50 will be made. It will allow verifying that the card is active and valid, in the case of a fixed subscription plan the service charge will be automatic from the month following the subscription date and in the case that the subscription is to a consumer plan it will be necessary to use the api/sutransaction endpoint to generate the transaction.
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateSuscriptionResponse"
+        "400":
+          description: Request failed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+        "401":
+          description: Incorrect public token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
+      x-codeSamples:
+        - lang: "CURL"
+          source: |
+            curl -X POST \
+            https://BASE_URL/api/sususcription \
+            -H 'Accept: application/json, text/plain, */*' \
+            -H 'Sign: SIGN  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Content-Type: application/json,application/json' \   
+            -H 'Host: BASE_URL' \   
+            -d {     
+                "plan": "pl9697fb170834ad42dd00",
+                "client": "cl9b1e1dd988694f30fa30"
+              }'
+        - lang: "PHP"
+          source: |
+            $client = new \GuzzleHttp\Client();         
+              $body = $client->request('POST', 'https://[base URL]/api/ sususcription, [             
+                'json' => [                
+                  'plan' => 'pl9697fb170834ad42dd00', 
+                  'client' => ' cl9b1e1dd988694f30fa30',
+                  ], 
+                  'headers' => [                 
+                    'Sign' => '0d04820b87c80f79a89235fcd256d9b6cddee2fc15fa50034c1903370f3de8c6',                 
+                    'Authorization' => 'Bearer 8c872egfdg996f8b418c872e996f8b418c872e996f8b41'              
+                  ]           
+                ])->getBody();           
+              $response = json_decode($body);
+        - lang: "JS"
+          source: |
+            const request = async (data) => {
+              const response = await fetch('https://[base URL]/api/sususcription', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Sign': '0d04820b87c80f79a89235fcd256d9b6cddee2fc15fa50034c1903370f3de8c6',                 
+                  'Authorization': 'Bearer 8c872egfdg996f8b418c872e996f8b418c872e996f8b41'  
+                },
+                body: JSON.stringify(data)
+              });
+              const result = await response.json();
+              console.log(result)
+            }
+
+            let data = {
+              plan: "pl9697fb170834ad42dd00",
+              client: "cl9b1e1dd988694f30fa30",
+            };
+
+            request(data);
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                plan:
+                  description: Plan id.
+                  type: string
+                  example: pl9697fb170834ad42dd00
+                client:
+                  description: Client id.
+                  type: string
+                  example: cl9b1e1dd988694f30fa30
+              required:
+                - plan
+                - client
+
+  /api/sutransaction/:
+    post:
+      tags:
+        - Consumption transaction
+      summary: Insert data for the transaction
+      description: This method allows the user of a Payku account to generate a unique transaction to one of his clients who is subscribed to a consumption plan.
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateSuTransactionResponse"
+        "400":
+          description: Request failed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+        "401":
+          description: Incorrect public token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
+      x-codeSamples:
+        - lang: "CURL"
+          source: |
+            curl -X POST \
+            https://BASE_URL/api/sutransaction \
+            -H 'Accept: application/json, text/plain, */*' \
+            -H 'Sign: SIGN  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Content-Type: application/json,application/json' \   
+            -H 'Host: BASE_URL' \   
+            -d {     
+                "suscription": "sucaab7865dceaff49d8b3",
+                "amount": "10000",
+                "order": "001",
+                "description": "Descripción"
+              }'
+        - lang: "PHP"
+          source: |
+            $client = new \GuzzleHttp\Client();         
+              $body = $client->request('POST', 'https://[base URL]/api/sutransaction, [             
+                'json' => [                
+                  'suscription' => sucaab7865dceaff49d8b3, 
+                  'order' => '001', 
+                  'monto' => '10000', 
+                  'description' => ' descripcion'
+                  ], 
+                  'headers' => [                 
+                    'Sign' => '0d04820b87c80f79a89235fcd256d9b6cddee2fc15fa50034c1903370f3de8c6',                 
+                    'Authorization' => 'Bearer 8c872egfdg996f8b418c872e996f8b418c872e996f8b41'              
+                  ]           
+                ])->getBody();           
+              $response = json_decode($body);
+        - lang: "JS"
+          source: |
+            const request = async (data) => {
+              const response = await fetch('https://[base URL]/api/sutransaction', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Sign': '0d04820b87c80f79a89235fcd256d9b6cddee2fc15fa50034c1903370f3de8c6',                 
+                  'Authorization': 'Bearer 8c872egfdg996f8b418c872e996f8b418c872e996f8b41'  
+                },
+                body: JSON.stringify(data)
+              });
+              const result = await response.json();
+              console.log(result)
+            }
+
+            let data = {
+              suscription: "sucaab7865dceaff49d8b3",
+              amount: "10000",
+              order: "001",
+              description: "Descripción"
+            };
+
+            request(data);
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                suscription:
+                  description: Unique subscription identifier for payku.
+                  type: string
+                  example: sucaab7865dceaff49d8b3
+                amount:
+                  description: Amount.
+                  type: string
+                  example: "10000"
+                order:
+                  description: Order.
+                  type: string
+                  example: "001"
+                description:
+                  description: Description.
+                  type: string
+                  example: Descripción
+              required:
+                - suscription
 
   /api/customer:
     post:
@@ -226,25 +653,25 @@ paths:
       summary: Third party account creation.
       description: This method allows the user to create a third party account.
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/customerPostResponse'
-        '400':
+                $ref: "#/components/schemas/customerPostResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
+                $ref: "#/components/schemas/Error400"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
+                $ref: "#/components/schemas/Error401"
       x-codeSamples:
-        - lang: 'CURL'
+        - lang: "CURL"
           source: |
             curl -X POST \
             https://BASE_URL/api/customer \
@@ -264,7 +691,7 @@ paths:
                 "banco_tipocuenta": "1",
                 "banco_codigo": "001"
               }'
-        - lang: 'PHP'
+        - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
               $body = $client->request('POST', 'https://[base URL]/api/customer', [
@@ -280,8 +707,8 @@ paths:
                   'banco_codigo'       => '001',
                 ];
               ])->getBody();           
-            $response = json_decode($body); 
-        - lang: 'JS'
+            $response = json_decode($body);
+        - lang: "JS"
           source: |
             const request = async (data) => {
               const response = await fetch('https://[base URL]/api/customer', {
@@ -386,225 +813,229 @@ paths:
                 - banco_numerocuente
                 - banco_tipocuenta
                 - banco_codigo
-  
-  /api/mall:
-      post:
-        tags:
-          - Mall
-        summary: Insert data from a transaction
-        description: This method allows the insertion of data from a transaction.
-        responses:
-          '200':
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/mallPostResponse'
-          '400':
-            description: Request failed.
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Error400'
-          '401':
-            description: Incorrect public token.
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Error401'
-        x-codeSamples:
-          - lang: 'CURL'
-            source: |
-              curl -X POST \
-              https://BASE_URL/api/mall \
-              -H 'Accept: application/json, text/plain, */*' \
-              -H 'Sign: SIGN  \  
-              -H 'Authorization: Bearer TOKEN_PUBLICO  \   
-              -H 'Content-Type: application/json,application/json' \   
-              -H 'Host: BASE_URL' \   
-              -d {     
-                  "email": "joedoe@gmail.com",
-                  "merchant": [
-                    ["81b6179e4feeef2b50af71d660f830de", "30000", "item1"],
-                    ["bcf6c06c523d9394be41bc0174c43d1476f274abb342955aac93cc8014737b3b","25000","item2"],
-                    ["3952097d617679f98c587bad0b3a781d","15000","item3"]
-                  ],
-                  "payment": "1",
-                  "order": 123,
-                  "urlreturn": "https://youwebsite.cl/urlreturn",
-                  "urlnotify": "https://youwebsite.cl/urlnotify"
-                }'
-          - lang: 'PHP'
-            source: |
-              $client = new \GuzzleHttp\Client();         
-                $body = $client->request('POST', 'https://[base URL]/api/mall', [
-                  'json' => [                
-                    'email'         => 'joedoe@gmail.com',                 
-                    'merchant'      => [
-                      ['81b6179e4feeef2b50af71d660f830de', '30000', 'item1'],
-                      ['bcf6c06c523d9394be41bc0174c43d1476f274abb342955aac93cc8014737b3b','25000','item2'],
-                      ['3952097d617679f98c587bad0b3a781d','15000','item3']
-                    ],                           
-                    'payment'       => '1',                                 
-                    'order'         => 123,                              
-                    'urlreturn'     => 'https://youwebsite.cl/urlreturn',   
-                    'urlnotify'     => 'https://youwebsite.cl/urlnotify'
-                    ],  
-                  'headers' => [                 
-                    'Sign' => 'f96ddc14a73a4dd6e009db2514108a3f44832795cd5ac50e6a80fd0b0ae92112',                 
-                    'Authorization' => 'Bearer 3952097d617679f98c587bad0b3a781d'              
-                  ]           
-                ])->getBody();           
-              $response = json_decode($body); 
-          - lang: 'JS'
-            source: |
-              const request = async (data) => {
-                const response = await fetch('https://[base URL]/api/mall', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Sign': 'f96ddc14a73a4dd6e009db2514108a3f44832795cd5ac50e6a80fd0b0ae92112',                 
-                    'Authorization': 'Bearer 3952097d617679f98c587bad0b3a781d'  
-                  },
-                  body: JSON.stringify(data)
-                });
-                const result = await response.json();
-                console.log(result)
-              }
 
-              let data = {
-                email: "joedoe@gmail.com",
-                merchant: [
+  /api/mall:
+    post:
+      tags:
+        - Mall
+      summary: Insert data from a transaction
+      description: This method allows the insertion of data from a transaction.
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/mallPostResponse"
+        "400":
+          description: Request failed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+        "401":
+          description: Incorrect public token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
+      x-codeSamples:
+        - lang: "CURL"
+          source: |
+            curl -X POST \
+            https://BASE_URL/api/mall \
+            -H 'Accept: application/json, text/plain, */*' \
+            -H 'Sign: SIGN  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Content-Type: application/json,application/json' \   
+            -H 'Host: BASE_URL' \   
+            -d {     
+                "email": "joedoe@gmail.com",
+                "merchant": [
                   ["81b6179e4feeef2b50af71d660f830de", "30000", "item1"],
                   ["bcf6c06c523d9394be41bc0174c43d1476f274abb342955aac93cc8014737b3b","25000","item2"],
                   ["3952097d617679f98c587bad0b3a781d","15000","item3"]
                 ],
-                payment: "1",
-                order: 123,
-                urlreturn: "https://youwebsite.cl/urlreturn",
-                urlnotify: "https://youwebsite.cl/urlnotify"
-              };
+                "payment": "1",
+                "order": 123,
+                "urlreturn": "https://youwebsite.cl/urlreturn",
+                "urlnotify": "https://youwebsite.cl/urlnotify"
+              }'
+        - lang: "PHP"
+          source: |
+            $client = new \GuzzleHttp\Client();         
+              $body = $client->request('POST', 'https://[base URL]/api/mall', [
+                'json' => [                
+                  'email'         => 'joedoe@gmail.com',                 
+                  'merchant'      => [
+                    ['81b6179e4feeef2b50af71d660f830de', '30000', 'item1'],
+                    ['bcf6c06c523d9394be41bc0174c43d1476f274abb342955aac93cc8014737b3b','25000','item2'],
+                    ['3952097d617679f98c587bad0b3a781d','15000','item3']
+                  ],                           
+                  'payment'       => '1',                                 
+                  'order'         => 123,                              
+                  'urlreturn'     => 'https://youwebsite.cl/urlreturn',   
+                  'urlnotify'     => 'https://youwebsite.cl/urlnotify'
+                  ],  
+                'headers' => [                 
+                  'Sign' => 'f96ddc14a73a4dd6e009db2514108a3f44832795cd5ac50e6a80fd0b0ae92112',                 
+                  'Authorization' => 'Bearer 3952097d617679f98c587bad0b3a781d'              
+                ]           
+              ])->getBody();           
+            $response = json_decode($body);
+        - lang: "JS"
+          source: |
+            const request = async (data) => {
+              const response = await fetch('https://[base URL]/api/mall', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Sign': 'f96ddc14a73a4dd6e009db2514108a3f44832795cd5ac50e6a80fd0b0ae92112',                 
+                  'Authorization': 'Bearer 3952097d617679f98c587bad0b3a781d'  
+                },
+                body: JSON.stringify(data)
+              });
+              const result = await response.json();
+              console.log(result)
+            }
 
-              request(data);
-        requestBody:
+            let data = {
+              email: "joedoe@gmail.com",
+              merchant: [
+                ["81b6179e4feeef2b50af71d660f830de", "30000", "item1"],
+                ["bcf6c06c523d9394be41bc0174c43d1476f274abb342955aac93cc8014737b3b","25000","item2"],
+                ["3952097d617679f98c587bad0b3a781d","15000","item3"]
+              ],
+              payment: "1",
+              order: 123,
+              urlreturn: "https://youwebsite.cl/urlreturn",
+              urlnotify: "https://youwebsite.cl/urlnotify"
+            };
+
+            request(data);
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  description: Client email.
+                  type: string
+                  format: email
+                  example: joedoe@gmail.com
+                merchant:
+                  type: array
+                  description: array containing clients, each client is an array is containing its public token, transaction value and description.
+                  items:
+                    type: array
+                    example:
+                      - [81b6179e4feeef2b50af71d660f830de, 30000, item1]
+                      - [
+                          bcf6c06c523d9394be41bc0174c43d1476f274abb342955aac93cc8014737b3b,
+                          25000,
+                          item2,
+                        ]
+                      - [3952097d617679f98c587bad0b3a781d, 15000, item3]
+                payment:
+                  description: |
+                    Identifier of the payment method.
+                    - 1 Webpay
+                  type: integer
+                  example: 1
+                order:
+                  description: identifier of the client's order, this must be unique.
+                  type: integer
+                  example: 123
+                urlreturn:
+                  description: return url of the trade where payku will redirect the payer.
+                  type: string
+                  format: url
+                  example: https://youwebsite.cl/urlreturn
+                urlnotify:
+                  description: callback url of the business where payku notifies the payment.
+                  type: string
+                  format: url
+                  example: https://youwebsite.cl/urlnotify
+              required:
+                - email
+                - merchant
+                - payment
+                - order
+                - urlreturn
+
+  /api/mall/{identificadorTrasaccion}:
+    get:
+      tags:
+        - Mall
+      summary: "Get status of a payment"
+      description: "This method allows obtaining the information of a payment made in ** Payku **"
+      operationId: getMallTransactionById
+      parameters:
+        - name: id
+          in: path
+          description: id of the transaction to request
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  email:
-                    description: Client email.
-                    type: string
-                    format: email
-                    example: joedoe@gmail.com
-                  merchant:
-                    type: array
-                    description: array containing clients, each client is an array is containing its public token, transaction value and description.
-                    items:
-                      type: array
-                      example: 
-                        - [81b6179e4feeef2b50af71d660f830de,30000,item1]
-                        - [bcf6c06c523d9394be41bc0174c43d1476f274abb342955aac93cc8014737b3b,25000,item2]
-                        - [3952097d617679f98c587bad0b3a781d,15000,item3]
-                  payment:
-                    description: |
-                                Identifier of the payment method.
-                                - 1 Webpay  
-                    type: integer
-                    example: 1
-                  order:
-                    description: identifier of the client's order, this must be unique.
-                    type: integer
-                    example: 123
-                  urlreturn:
-                    description: return url of the trade where payku will redirect the payer.
-                    type: string
-                    format: url
-                    example: https://youwebsite.cl/urlreturn
-                  urlnotify: 
-                    description: callback url of the business where payku notifies the payment.
-                    type: string
-                    format: url
-                    example: https://youwebsite.cl/urlnotify
-                required:
-                  - email
-                  - merchant
-                  - payment
-                  - order
-                  - urlreturn
-
-  /api/mall/{identificadorTrasaccion}:
-        get:
-          tags:
-            - Mall
-          summary: 'Get status of a payment'
-          description: 'This method allows obtaining the information of a payment made in ** Payku **'
-          operationId: getMallTransactionById
-          parameters:
-            - name: id
-              in: path
-              description: id of the transaction to request
-              required: true
+                $ref: "#/components/schemas/IdentifierMallResponse"
+        "400":
+          description: Request failed.
+          content:
+            application/json:
               schema:
-                type: string
-          responses:
-            '200':
-              content:
-                application/json:
-                  schema:
-                    $ref: '#/components/schemas/IdentifierMallResponse'
-            '400':
-              description: Request failed.
-              content:
-                application/json:
-                  schema:
-                    $ref: '#/components/schemas/Error400get'
-            '401':
-              description: Incorrect public token.
-              content:
-                application/json:
-                  schema:
-                    $ref: '#/components/schemas/Error401'
-            '404':
-              description: Identifier does not exist.
-              content:
-                application/json:
-                  schema:
-                    $ref: '#/components/schemas/Error404'
-          x-codeSamples:
-            - lang: 'CURL'
-              source: |
-                curl -X GET \
-                https://BASE-URL/api/mall/ID-IDENTIFICADOR  \
-                -H 'Accept: application/json, text/plain, */*' \
-                -H 'Authorization: Bearer TOKEN-PUBLICO' \
-                -H 'Content-Type: application/json,application/json' \
-                -H 'Host: BASE-URL ' \
-            - lang: 'PHP'
-              source: |
-                $client = new \GuzzleHttp\Client();         
-                  $body = $client->request('GET', 'https://[base URL]/api/mall/malld200058ab44739ddee2adcd2f5', [
-                    'headers' => [                                  
-                      'Sign' => 'f96ddc14a73a4dd6e009db2514108a3f44832795cd5ac50e6a80fd0b0ae92112',                 
-                      'Authorization' => 'Bearer 3952097d617679f98c587bad0b3a781d'               
-                    ]           
-                  ])->getBody();           
-                $response = json_decode($body);
-            - lang: 'JS'
-              source: |
-                const request = async () => {
-                  const response = await fetch('https://[base URL]/api/mall/malld200058ab44739ddee2adcd2f5', {
-                    method: 'GET',
-                    headers: {
-                      'Content-Type': 'application/json',                 
-                      'Sign' => 'f96ddc14a73a4dd6e009db2514108a3f44832795cd5ac50e6a80fd0b0ae92112',                 
-                      'Authorization' => 'Bearer 3952097d617679f98c587bad0b3a781d' 
-                    },
-                  });
-                  const result = await response.json();
-                  console.log(result)
-                }
+                $ref: "#/components/schemas/Error400get"
+        "401":
+          description: Incorrect public token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
+        "404":
+          description: Identifier does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error404"
+      x-codeSamples:
+        - lang: "CURL"
+          source: |
+            curl -X GET \
+            https://BASE-URL/api/mall/ID-IDENTIFICADOR  \
+            -H 'Accept: application/json, text/plain, */*' \
+            -H 'Authorization: Bearer TOKEN-PUBLICO' \
+            -H 'Content-Type: application/json,application/json' \
+            -H 'Host: BASE-URL ' \
+        - lang: "PHP"
+          source: |
+            $client = new \GuzzleHttp\Client();         
+              $body = $client->request('GET', 'https://[base URL]/api/mall/malld200058ab44739ddee2adcd2f5', [
+                'headers' => [                                  
+                  'Sign' => 'f96ddc14a73a4dd6e009db2514108a3f44832795cd5ac50e6a80fd0b0ae92112',                 
+                  'Authorization' => 'Bearer 3952097d617679f98c587bad0b3a781d'               
+                ]           
+              ])->getBody();           
+            $response = json_decode($body);
+        - lang: "JS"
+          source: |
+            const request = async () => {
+              const response = await fetch('https://[base URL]/api/mall/malld200058ab44739ddee2adcd2f5', {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',                 
+                  'Sign' => 'f96ddc14a73a4dd6e009db2514108a3f44832795cd5ac50e6a80fd0b0ae92112',                 
+                  'Authorization' => 'Bearer 3952097d617679f98c587bad0b3a781d' 
+                },
+              });
+              const result = await response.json();
+              console.log(result)
+            }
 
-                request();
+            request();
 
   /api/suclient:
     post:
@@ -613,25 +1044,25 @@ paths:
       summary: Insert data to a Client
       description: This method allows the insertion of Client data.
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AdminClientResponse'
-        '400':
+                $ref: "#/components/schemas/AdminClientResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
+                $ref: "#/components/schemas/Error400"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
+                $ref: "#/components/schemas/Error401"
       x-codeSamples:
-        - lang: 'CURL'
+        - lang: "CURL"
           source: |
             curl -X POST \
             https://BASE_URL/api/suclient \
@@ -650,7 +1081,7 @@ paths:
                 "city": "Santiago",
                 "postal_code": "850000
               }'
-        - lang: 'PHP'
+        - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
               $body = $client->request('POST', 'https://[base URL]/api/suclient', [
@@ -669,8 +1100,8 @@ paths:
                   'Authorization' => 'Bearer 8c872egfdg996f8b418c872e996f8b418c872e996f8b41'              
                 ]           
               ])->getBody();           
-            $response = json_decode($body); 
-        - lang: 'JS'
+            $response = json_decode($body);
+        - lang: "JS"
           source: |
             const request = async (data) => {
               const response = await fetch('https://[base URL]/api/suclient', {
@@ -729,12 +1160,12 @@ paths:
                   description: Client region.
                   type: string
                   example: "Metropolitana"
-                city: 
+                city:
                   description: Client city.
                   type: string
                   example: "Santiago"
                 postal_code:
-                  description: Client Zip Code.  
+                  description: Client Zip Code.
                   type: string
                   example: "850000"
               required:
@@ -757,25 +1188,25 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClientIdResponse'
-        '400':
+                $ref: "#/components/schemas/ClientIdResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Event'
-        '401':
+                $ref: "#/components/schemas/Error400Event"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
+                $ref: "#/components/schemas/Error401"
       x-codeSamples:
-        - lang: 'CURL'
+        - lang: "CURL"
           source: |
             curl -X GET \
             https://BASE_URL/api/suclient/id \
@@ -783,8 +1214,8 @@ paths:
             -H 'Sign: SIGN  \  
             -H 'Authorization: Bearer TOKEN_PUBLICO  \   
             -H 'Content-Type: application/json,application/json' \   
-            -H 'Host: BASE_URL' \   
-        - lang: 'PHP'
+            -H 'Host: BASE_URL' \
+        - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
               $body = $client->request('GET', 'https://[base URL]/api/suclient/cla90927fa9b30e1dfffa0', [                    
@@ -794,7 +1225,7 @@ paths:
                 ]           
               ])->getBody();           
             $response = json_decode($body);
-        - lang: 'JS'
+        - lang: "JS"
           source: |
             const request = async () => {
               const response = await fetch('https://[base URL]/api/suclient/cla90927fa9b30e1dfffa0', {
@@ -825,25 +1256,25 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ModifyClientResponse'
-        '400':
+                $ref: "#/components/schemas/ModifyClientResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
+                $ref: "#/components/schemas/Error400"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
+                $ref: "#/components/schemas/Error401"
       x-codeSamples:
-        - lang: 'CURL'
+        - lang: "CURL"
           source: |
             curl -X PUT \
             https://BASE_URL/api/suclient/id \
@@ -862,7 +1293,7 @@ paths:
                 "city": "Santiago",
                 "postal_code": "750000"
               }'
-        - lang: 'PHP'
+        - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
               $body = $client->request('PUT', 'https://[base URL]//api/suclient/cla90927fa9b30e1dfffa0', [             
@@ -883,7 +1314,7 @@ paths:
               ]           
             ])->getBody();           
             $response = json_decode($body);
-        - lang: 'JS'
+        - lang: "JS"
           source: |
             const request = async (data) => {
               const response = await fetch('https://[base URL]/api/suclient', {
@@ -942,12 +1373,12 @@ paths:
                   description: Client region.
                   type: string
                   example: "Metropolitana"
-                city: 
+                city:
                   description: Client city.
                   type: string
                   example: "Santiago"
                 postal_code:
-                  description: Client Zip Code.  
+                  description: Client Zip Code.
                   type: string
                   example: "750000"
 
@@ -965,25 +1396,25 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeleteClientResponse'
-        '400':
+                $ref: "#/components/schemas/DeleteClientResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
+                $ref: "#/components/schemas/Error400"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
+                $ref: "#/components/schemas/Error401"
       x-codeSamples:
-        - lang: 'CURL'
+        - lang: "CURL"
           source: |
             curl -X DELETE \
             https://BASE_URL/api/suclient/id \
@@ -991,8 +1422,8 @@ paths:
             -H 'Sign: SIGN  \  
             -H 'Authorization: Bearer TOKEN_PUBLICO  \   
             -H 'Content-Type: application/json,application/json' \   
-            -H 'Host: BASE_URL' \   
-        - lang: 'PHP'
+            -H 'Host: BASE_URL' \
+        - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
               $body = $client->request('DELETE', 'https:// [base URL]/api/suclient/cla90927fa9b30e1dfffa0', [             
@@ -1000,8 +1431,8 @@ paths:
                     'Sign' => '0d04820b87c80f79a89235fcd256d9b6cddee2fc15fa50034c1903370f3de8c6',                 
                     'Authorization' => 'Bearer 8c872egfdg996f8b418c872e996f8b418c872e996f8b41'              ]           
                   ])->getBody();           
-                $response = json_decode($body); 
-        - lang: 'JS'
+                $response = json_decode($body);
+        - lang: "JS"
           source: |
             const request = async () => {
               const response = await fetch('https://[base URL]/api/suclient/cla90927fa9b30e1dfffa0', {
@@ -1025,27 +1456,27 @@ paths:
       summary: Get all Clients
       description: This method allows to obtain all Clients.
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ModifyClientResponse'
-        '400':
+                  $ref: "#/components/schemas/ModifyClientResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
+                $ref: "#/components/schemas/Error400"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
+                $ref: "#/components/schemas/Error401"
       x-codeSamples:
-        - lang: 'CURL'
+        - lang: "CURL"
           source: |
             curl -X GET \
             https://BASE_URL/api/suclient/Clients \
@@ -1053,8 +1484,8 @@ paths:
             -H 'Sign: SIGN  \  
             -H 'Authorization: Bearer TOKEN_PUBLICO  \   
             -H 'Content-Type: application/json,application/json' \   
-            -H 'Host: BASE_URL' \   
-        - lang: 'PHP'
+            -H 'Host: BASE_URL' \
+        - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
               $body = $client->request('GET', 'https://[base URL]/api/suclient/Clients', [                      
@@ -1064,7 +1495,7 @@ paths:
                 ]           
               ])->getBody();           
             $response = json_decode($body);
-        - lang: 'JS'
+        - lang: "JS"
           source: |
             const request = async () => {
               const response = await fetch('https://[base URL]/api/suclient/Clients', {
@@ -1086,27 +1517,27 @@ paths:
       tags:
         - Subscription
       summary: Insert data for subscription
-      description: This method allows the insertion of data for a subscription.
+      description: This method allows the user of a Payku account to generate a subscription to a subscription plan of a fixed amount or subscription to a consumer plan to one of its clients, it is important to note that when making this request for the first time, a charge of $ 50 will be made. It will allow verifying that the card is active and valid, in the case of a fixed subscription plan the service charge will be automatic from the month following the subscription date and in the case that the subscription is to a consumer plan it will be necessary to use the api/sutransaction endpoint to generate the transaction.
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateSuscriptionResponse'
-        '400':
+                $ref: "#/components/schemas/CreateSuscriptionResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
+                $ref: "#/components/schemas/Error400"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
+                $ref: "#/components/schemas/Error401"
       x-codeSamples:
-        - lang: 'CURL'
+        - lang: "CURL"
           source: |
             curl -X POST \
             https://BASE_URL/api/sususcription \
@@ -1119,7 +1550,7 @@ paths:
                 "plan": "pl9697fb170834ad42dd00",
                 "client": "cl9b1e1dd988694f30fa30"
               }'
-        - lang: 'PHP'
+        - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
               $body = $client->request('POST', 'https://[base URL]/api/ sususcription, [             
@@ -1133,7 +1564,7 @@ paths:
                   ]           
                 ])->getBody();           
               $response = json_decode($body);
-        - lang: 'JS'
+        - lang: "JS"
           source: |
             const request = async (data) => {
               const response = await fetch('https://[base URL]/api/sususcription', {
@@ -1178,27 +1609,27 @@ paths:
       tags:
         - Subscription
       summary: Insert data for the transaction
-      description: This method allows the insertion of data for a transaction.
+      description: This method allows the user of a Payku account to generate a unique transaction to one of his clients who is subscribed to a consumption plan.
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateSuTransactionResponse'
-        '400':
+                $ref: "#/components/schemas/CreateSuTransactionResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
+                $ref: "#/components/schemas/Error400"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
+                $ref: "#/components/schemas/Error401"
       x-codeSamples:
-        - lang: 'CURL'
+        - lang: "CURL"
           source: |
             curl -X POST \
             https://BASE_URL/api/sutransaction \
@@ -1213,7 +1644,7 @@ paths:
                 "order": "001",
                 "description": "Descripción"
               }'
-        - lang: 'PHP'
+        - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
               $body = $client->request('POST', 'https://[base URL]/api/sutransaction, [             
@@ -1229,7 +1660,7 @@ paths:
                   ]           
                 ])->getBody();           
               $response = json_decode($body);
-        - lang: 'JS'
+        - lang: "JS"
           source: |
             const request = async (data) => {
               const response = await fetch('https://[base URL]/api/sutransaction', {
@@ -1293,25 +1724,25 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuscriptionIdResponse'
-        '400':
+                $ref: "#/components/schemas/SuscriptionIdResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Event'
-        '401':
+                $ref: "#/components/schemas/Error400Event"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
+                $ref: "#/components/schemas/Error401"
       x-codeSamples:
-        - lang: 'CURL'
+        - lang: "CURL"
           source: |
             curl -X GET \
             https://BASE_URL/api/sususcription/id \
@@ -1319,8 +1750,8 @@ paths:
             -H 'Sign: SIGN  \  
             -H 'Authorization: Bearer TOKEN_PUBLICO  \   
             -H 'Content-Type: application/json,application/json' \   
-            -H 'Host: BASE_URL' \   
-        - lang: 'PHP'
+            -H 'Host: BASE_URL' \
+        - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
               $body = $client->request('GET', 'https://[base URL]/api/sususcription/sucaab7865dceaff49d8b', [                          
@@ -1330,7 +1761,7 @@ paths:
                 ]           
               ])->getBody();           
             $response = json_decode($body);
-        - lang: 'JS'
+        - lang: "JS"
           source: |
             const request = async () => {
               const response = await fetch('https://[base URL]/api/sususcription/sucaab7865dceaff49d8b', {
@@ -1360,25 +1791,25 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeleteSuscriptionResponse'
-        '400':
+                $ref: "#/components/schemas/DeleteSuscriptionResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
+                $ref: "#/components/schemas/Error400"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
+                $ref: "#/components/schemas/Error401"
       x-codeSamples:
-        - lang: 'CURL'
+        - lang: "CURL"
           source: |
             curl -X DELETE \
             https://BASE_URL/api/sususcription/id \
@@ -1386,8 +1817,8 @@ paths:
             -H 'Sign: SIGN  \  
             -H 'Authorization: Bearer TOKEN_PUBLICO  \   
             -H 'Content-Type: application/json,application/json' \   
-            -H 'Host: BASE_URL' \   
-        - lang: 'PHP'
+            -H 'Host: BASE_URL' \
+        - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
               $body = $client->request('DELETE', 'https:// [base URL]/api/sususcription/sucaab7865dceaff49d8b3, [                          
@@ -1396,7 +1827,7 @@ paths:
                     'Authorization' => 'Bearer 8c872egfdg996f8b418c872e996f8b418c872e996f8b41'              ]           
                   ])->getBody();           
                 $response = json_decode($body);
-        - lang: 'JS'
+        - lang: "JS"
           source: |
             const request = async () => {
               const response = await fetch('https://[base URL]/api/sususcription/sucaab7865dceaff49d8b', {
@@ -1411,7 +1842,7 @@ paths:
               console.log(result)
             }
 
-            request(data); 
+            request(data);
 
   /api/suinscriptionscards:
     post:
@@ -1420,25 +1851,25 @@ paths:
       summary: Affiliate card to subscription
       description: This method allows the insertion of the data of a card for subscription.
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CardSuscriptionResponse'
-        '400':
+                $ref: "#/components/schemas/CardSuscriptionResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
+                $ref: "#/components/schemas/Error400"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
+                $ref: "#/components/schemas/Error401"
       x-codeSamples:
-        - lang: 'CURL'
+        - lang: "CURL"
           source: |
             curl -X POST \
             https://BASE_URL/api/suinscriptionscards \
@@ -1450,7 +1881,7 @@ paths:
             -d {     
                 "id": "sucaab7865dceaff49d8b3"
               }'
-        - lang: 'PHP'
+        - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
               $body = $client->request('POST', 'https:// [base URL]/api/suinscriptionscards', [             
@@ -1461,8 +1892,8 @@ paths:
                     'Sign' => '0d04820b87c80f79a89235fcd256d9b6cddee2fc15fa50034c1903370f3de8c6',                 
                     'Authorization' => 'Bearer 8c872egfdg996f8b418c872e996f8b418c872e996f8b41'              ]           
                   ])->getBody();           
-                $response = json_decode($body); 
-        - lang: 'JS'
+                $response = json_decode($body);
+        - lang: "JS"
           source: |
             const request = async (data) => {
               const response = await fetch('https://[base URL]/api/suinscriptionscards', {
@@ -1503,25 +1934,25 @@ paths:
       summary: Insert the data of a plan.
       description: This method allows the insertion of data for the creation of a plan.
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PlanResponse'
-        '400':
+                $ref: "#/components/schemas/PlanResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
+                $ref: "#/components/schemas/Error400"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
+                $ref: "#/components/schemas/Error401"
       x-codeSamples:
-        - lang: 'CURL'
+        - lang: "CURL"
           source: |
             curl -X POST \
             https://BASE_URL/api/suplan \
@@ -1534,7 +1965,7 @@ paths:
                 "name": "Test plan",
                 "description": "Test Plan"
               }'
-        - lang: 'PHP'
+        - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
               $body = $client->request('POST', 'https:// [base URL]/api/suplan', [             
@@ -1546,8 +1977,8 @@ paths:
                     'Sign' => '0d04820b87c80f79a89235fcd256d9b6cddee2fc15fa50034c1903370f3de8c6',                 
                     'Authorization' => 'Bearer 8c872egfdg996f8b418c872e996f8b418c872e996f8b41'              ]           
                   ])->getBody();           
-                $response = json_decode($body); 
-        - lang: 'JS'
+                $response = json_decode($body);
+        - lang: "JS"
           source: |
             const request = async (data) => {
               const response = await fetch('https://[base URL]/api/suplan', {
@@ -1578,7 +2009,7 @@ paths:
                 name:
                   description: Plan name.
                   type: string
-                  example: Test plan 
+                  example: Test plan
                 description:
                   description: Plan description.
                   type: string
@@ -1601,25 +2032,25 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PlanIdResponse'
-        '400':
+                $ref: "#/components/schemas/PlanIdResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Event'
-        '401':
+                $ref: "#/components/schemas/Error400Event"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
+                $ref: "#/components/schemas/Error401"
       x-codeSamples:
-        - lang: 'CURL'
+        - lang: "CURL"
           source: |
             curl -X GET \
             https://BASE_URL/api/suplan/id \
@@ -1627,8 +2058,8 @@ paths:
             -H 'Sign: SIGN  \  
             -H 'Authorization: Bearer TOKEN_PUBLICO  \   
             -H 'Content-Type: application/json,application/json' \   
-            -H 'Host: BASE_URL' \   
-        - lang: 'PHP'
+            -H 'Host: BASE_URL' \
+        - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
               $body = $client->request('GET', 'https://[base URL]/api/suplan/pl29f6ad69fbd594148c39', [                    
@@ -1638,7 +2069,7 @@ paths:
                 ]           
               ])->getBody();           
             $response = json_decode($body);
-        - lang: 'JS'
+        - lang: "JS"
           source: |
             const request = async () => {
               const response = await fetch('https://[base URL]/api/suplan/pl29f6ad69fbd594148c39', {
@@ -1662,25 +2093,25 @@ paths:
       summary: Check data from all plans
       description: This method allows to obtain the details of all the plans.
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PlanAllResponse'
-        '400':
+                $ref: "#/components/schemas/PlanAllResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Event'
-        '401':
+                $ref: "#/components/schemas/Error400Event"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
+                $ref: "#/components/schemas/Error401"
       x-codeSamples:
-        - lang: 'CURL'
+        - lang: "CURL"
           source: |
             curl -X GET \
             https://BASE_URL/api/suplan/plans \
@@ -1688,8 +2119,8 @@ paths:
             -H 'Sign: SIGN  \  
             -H 'Authorization: Bearer TOKEN_PUBLICO  \   
             -H 'Content-Type: application/json,application/json' \   
-            -H 'Host: BASE_URL' \   
-        - lang: 'PHP'
+            -H 'Host: BASE_URL' \
+        - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
               $body = $client->request('GET', 'https://[base URL]/api/suplan/plans', [                       
@@ -1699,7 +2130,7 @@ paths:
                 ]           
               ])->getBody();           
             $response = json_decode($body);
-        - lang: 'JS'
+        - lang: "JS"
           source: |
             const request = async () => {
               const response = await fetch('https://[base URL]/api/suplan/plans', {
@@ -1721,28 +2152,29 @@ paths:
       tags:
         - Transaction
       summary: Generate a transaction
-      description: This method allows to create a payment order to **Payku** and receives as a response the **URL** to redirect the payer's browser and the **token** that identifies the transaction.
-                    Once the payer makes the successful payment, **Payku** will notify the result to the page of the business that was sent in the **urlnotify** parameter.
+      description:
+        This method allows to create a payment order to **Payku** and receives as a response the **URL** to redirect the payer's browser and the **token** that identifies the transaction.
+        Once the payer makes the successful payment, **Payku** will notify the result to the page of the business that was sent in the **urlnotify** parameter.
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionResponse'
-        '400':
+                $ref: "#/components/schemas/TransactionResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
+                $ref: "#/components/schemas/Error400"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
+                $ref: "#/components/schemas/Error401"
       x-codeSamples:
-        - lang: 'cURL'
+        - lang: "cURL"
           source: |
             curl -X POST \
             https://BASE-URL/api/transaction \
@@ -1759,7 +2191,7 @@ paths:
               "urlreturn": "https://you_web_site/urlreturn",
               "urlnotify": "https://you_web_site/urlnotify"
             }'
-        - lang: 'PHP'
+        - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
               $body = $client->request('POST', 'https://[base URL]/api/transaction', [
@@ -1777,7 +2209,7 @@ paths:
                 ]           
               ])->getBody();           
             $response = json_decode($body);
-        - lang: 'JS'
+        - lang: "JS"
           source: |
             const request = async (data) => {
               const response = await fetch('https://[base URL]/api/transaction', {
@@ -1845,7 +2277,7 @@ paths:
                   type: string
                   format: url
                   example: https://you_web_site/urlreturn
-                urlnotify: 
+                urlnotify:
                   description: Callback url of the business where payku will notify the payment.
                   type: string
                   format: url
@@ -1860,8 +2292,8 @@ paths:
     get:
       tags:
         - Transaction
-      summary: 'Get status of a payment'
-      description: 'This method allows you to obtain the information of a payment made in **Payku**'
+      summary: "Get status of a payment"
+      description: "This method allows you to obtain the information of a payment made in **Payku**"
       operationId: getTransactionById
       parameters:
         - name: id
@@ -1871,31 +2303,31 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IdentifierResponse'
-        '400':
+                $ref: "#/components/schemas/IdentifierResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400get'
-        '401':
+                $ref: "#/components/schemas/Error400get"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
-        '404':
+                $ref: "#/components/schemas/Error401"
+        "404":
           description: Identifier does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error404'
+                $ref: "#/components/schemas/Error404"
       x-codeSamples:
-        - lang: 'CURL'
+        - lang: "CURL"
           source: |
             curl -X GET \
             https://BASE-URL/api/transaction/ID-IDENTIFICADOR  \
@@ -1903,7 +2335,7 @@ paths:
             -H 'Authorization: Bearer TOKEN-PUBLICO' \
             -H 'Content-Type: application/json,application/json' \
             -H 'Host: BASE-URL ' \
-        - lang: 'PHP'
+        - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
               $body = $client->request('GET', 'https://[base URL]/api/transaction/10ac494c1d8da71d98ea', [
@@ -1912,7 +2344,7 @@ paths:
                 ]           
               ])->getBody();           
             $response = json_decode($body);
-        - lang: 'JS'
+        - lang: "JS"
           source: |
             const request = async () => {
               const response = await fetch('https://[base URL]/api/transaction/10ac494c1d8da71d98ea', {
@@ -1932,28 +2364,28 @@ paths:
     post:
       tags:
         - Transaction
-      summary: 'url Callback'
+      summary: "url Callback"
       description: |
         After the payment has been made by the user, payku will notify the merchant, the result of the operation (status), invoking the urlnotify previously provided in the creation of the payment and in turn will deliver a series of data for internal validations by the application of the trade, such as the order for the transaction to be identified in your system, the transaction_id which corresponds to the unique identifier in payku and a verification_key, which corresponds to a unique validation hash per transaction.
          These data will allow the merchant to develop an automatic call to the validation method in payku called "verify", which is designed to certify the origin of the invocation of the method and thus rule out any alteration of the data or attempted fraud.
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VerificationResponse'
-        '400':
+                $ref: "#/components/schemas/VerificationResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
+                $ref: "#/components/schemas/Error400"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
+                $ref: "#/components/schemas/Error401"
       requestBody:
         content:
           application/json:
@@ -1973,9 +2405,9 @@ paths:
                   type: string
                   example: 1568041684
               required:
-              - transaction_id
-              - verification_key
-              - order
+                - transaction_id
+                - verification_key
+                - order
 
   /api/event:
     post:
@@ -1984,25 +2416,25 @@ paths:
       summary: Create an event
       description: This method allows you to create an event and receive the event details as a response.
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EventCreateResponse'
-        '400':
+                $ref: "#/components/schemas/EventCreateResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Event'
-        '401':
+                $ref: "#/components/schemas/Error400Event"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
+                $ref: "#/components/schemas/Error401"
       x-codeSamples:
-        - lang: 'CURL'
+        - lang: "CURL"
           source: |
             curl -X POST \
               https://BASE_URL/api/event \
@@ -2024,7 +2456,7 @@ paths:
                   ["afiliate2@gmail.com",  50]
                 ] 
               }'
-        - lang: 'PHP'
+        - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
               $body = $client->request('POST', 'https://[base URL]/api/event', [
@@ -2047,7 +2479,7 @@ paths:
                 ]           
               ])->getBody();           
             $response = json_decode($body);
-        - lang: 'JS'
+        - lang: "JS"
           source: |
             const request = async (data) => {
               const response = await fetch('https://[base URL]/api/event', {
@@ -2134,12 +2566,12 @@ paths:
                         description: Percentage which corresponds to the beneficiary.
                         example: "100"
               required:
-              - event
-              - name
-              - date_event
-              - date_closing_event
-              - date_payment
-    
+                - event
+                - name
+                - date_event
+                - date_closing_event
+                - date_payment
+
   /api/event/{idEvent}:
     get:
       tags:
@@ -2155,33 +2587,33 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EventIdResponse'
-        '400':
+                $ref: "#/components/schemas/EventIdResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Event'
-        '401':
+                $ref: "#/components/schemas/Error400Event"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
+                $ref: "#/components/schemas/Error401"
       x-codeSamples:
-        - lang: 'CURL'
+        - lang: "CURL"
           source: |
             curl -X GET \
               https://BASE_URL/api/event \
               -H 'Accept: application/json, text/plain, */*' \
               -H 'Authorization: Bearer TOKEN_PUBLICO  \   
               -H 'Content-Type: application/json,application/json' \   
-              -H 'Host: BASE_URL' \   
-        - lang: 'PHP'
+              -H 'Host: BASE_URL' \
+        - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
               $body = $client->request('GET', 'https://[base URL]/api/event/98374', [  
@@ -2190,7 +2622,7 @@ paths:
                 ]           
               ])->getBody();           
             $response = json_decode($body);
-        - lang: 'JS'
+        - lang: "JS"
           source: |
             const request = async (data) => {
               const response = await fetch('https://[base URL]/api/event/98374', {
@@ -2213,25 +2645,25 @@ paths:
       summary: Inserting a client
       description: This method allows the insertion of client data.
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AdminClientMarketResponse'
-        '400':
+                $ref: "#/components/schemas/AdminClientMarketResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
+                $ref: "#/components/schemas/Error400"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
+                $ref: "#/components/schemas/Error401"
       x-codeSamples:
-        - lang: 'CURL'
+        - lang: "CURL"
           source: |
             curl -X POST \
             https://BASE_URL/api/maclient \
@@ -2250,7 +2682,7 @@ paths:
                   "rut": "111111111"
                 }
               }'
-        - lang: 'PHP'
+        - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
               $body = $client->request('POST', 'https://[base URL]/api/maclient', [
@@ -2270,7 +2702,7 @@ paths:
                 ]           
               ])->getBody();           
             $response = json_decode($body);
-        - lang: 'JS'
+        - lang: "JS"
           source: |
             const request = async (data) => {
               const response = await fetch('https://[base URL]/api/maclient', {
@@ -2297,7 +2729,7 @@ paths:
               }
             };
 
-            request(data); 
+            request(data);
       requestBody:
         content:
           application/json:
@@ -2336,7 +2768,7 @@ paths:
                       description: Client's account number.
                       type: string
                       example: "12312313121"
-                    rut: 
+                    rut:
                       description: Single Tax Registry.
                       type: string
                       example: "111111111"
@@ -2366,33 +2798,33 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AdminClientMarketResponse'
-        '400':
+                $ref: "#/components/schemas/AdminClientMarketResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Event'
-        '401':
+                $ref: "#/components/schemas/Error400Event"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
+                $ref: "#/components/schemas/Error401"
       x-codeSamples:
-        - lang: 'CURL'
+        - lang: "CURL"
           source: |
             curl -X GET \
             https://BASE_URL/api/maclient/id \
             -H 'Accept: application/json, text/plain, */*' \
             -H 'Authorization: Bearer TOKEN_PUBLICO  \   
             -H 'Content-Type: application/json,application/json' \   
-            -H 'Host: BASE_URL' \   
-        - lang: 'PHP'
+            -H 'Host: BASE_URL' \
+        - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
               $body = $client->request('GET', 'https://[base URL]/api/maclient/madb93fc00a2cf6f4449', [                    
@@ -2401,7 +2833,7 @@ paths:
                 ]           
               ])->getBody();           
             $response = json_decode($body);
-        - lang: 'JS'
+        - lang: "JS"
           source: |
             const request = async () => {
               const response = await fetch('https://[base URL]/api/maclient/madb93fc00a2cf6f4449', {
@@ -2430,41 +2862,41 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeleteClientMarketResponse'
-        '400':
+                $ref: "#/components/schemas/DeleteClientMarketResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
+                $ref: "#/components/schemas/Error400"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
+                $ref: "#/components/schemas/Error401"
       x-codeSamples:
-        - lang: 'CURL'
+        - lang: "CURL"
           source: |
             curl -X DELETE \
             https://BASE_URL/api/maclient/id \
             -H 'Accept: application/json, text/plain, */*' \
             -H 'Authorization: Bearer TOKEN_PUBLICO  \   
             -H 'Content-Type: application/json,application/json' \   
-            -H 'Host: BASE_URL' \   
-        - lang: 'PHP'
+            -H 'Host: BASE_URL' \
+        - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
               $body = $client->request('DELETE', 'https:// [base URL]/api/maclient/madb93fc00a2cf6f4449', [                 
                   'headers' => [                                 
                     'Authorization' => 'Bearer 8c872egfdg996f8b418c872e996f8b418c872e996f8b41'              ]           
                   ])->getBody();           
-                $response = json_decode($body); 
-        - lang: 'JS'
+                $response = json_decode($body);
+        - lang: "JS"
           source: |
             const request = async () => {
               const response = await fetch('https://[base URL]/api/maclient/madb93fc00a2cf6f4449', {
@@ -2487,25 +2919,25 @@ paths:
       summary: Manage Memberships
       description: This method allows you to register the data for membership.
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AdminAffiliationResponse'
-        '400':
+                $ref: "#/components/schemas/AdminAffiliationResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
+                $ref: "#/components/schemas/Error400"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
+                $ref: "#/components/schemas/Error401"
       x-codeSamples:
-        - lang: 'CURL'
+        - lang: "CURL"
           source: |
             curl -X POST \
             https://BASE_URL/api/maaffiliation \
@@ -2523,7 +2955,7 @@ paths:
                   }
                 ]
               }'
-        - lang: 'PHP'
+        - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
               $body = $client->request('POST', 'https://[base URL]/api/maclient', [
@@ -2538,8 +2970,8 @@ paths:
                   'Authorization' => 'Bearer 8c872egfdg996f8b418c872e996f8b418c872e996f8b41'              
                 ]           
               ])->getBody();           
-            $response = json_decode($body); 
-        - lang: 'JS'
+            $response = json_decode($body);
+        - lang: "JS"
           source: |
             const request = async (data) => {
               const response = await fetch('https://[base URL]/api/maaffiliation', {
@@ -2616,33 +3048,33 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AdminAffiliationResponse'
-        '400':
+                $ref: "#/components/schemas/AdminAffiliationResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400Event'
-        '401':
+                $ref: "#/components/schemas/Error400Event"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
+                $ref: "#/components/schemas/Error401"
       x-codeSamples:
-        - lang: 'CURL'
+        - lang: "CURL"
           source: |
             curl -X GET \
             https://BASE_URL/api/maaffiliation/id \
             -H 'Accept: application/json, text/plain, */*' \
             -H 'Authorization: Bearer TOKEN_PUBLICO  \   
             -H 'Content-Type: application/json,application/json' \   
-            -H 'Host: BASE_URL' \   
-        - lang: 'PHP'
+            -H 'Host: BASE_URL' \
+        - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
               $body = $client->request('GET', 'https://[base URL]/api/maaffiliation/sucaab7865dceaff49d8b3', [                    
@@ -2651,7 +3083,7 @@ paths:
                 ]           
               ])->getBody();           
             $response = json_decode($body);
-        - lang: 'JS'
+        - lang: "JS"
           source: |
             const request = async () => {
               const response = await fetch('https://[base URL]/api/maaffiliation/sucaab7865dceaff49d8b3', {
@@ -2666,7 +3098,7 @@ paths:
             }
 
             request();
-  
+
     delete:
       tags:
         - Marketplace
@@ -2681,33 +3113,33 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeleteAffiliationResponse'
-        '400':
+                $ref: "#/components/schemas/DeleteAffiliationResponse"
+        "400":
           description: Request failed.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error400'
-        '401':
+                $ref: "#/components/schemas/Error400"
+        "401":
           description: Incorrect public token.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error401'
+                $ref: "#/components/schemas/Error401"
       x-codeSamples:
-        - lang: 'CURL'
+        - lang: "CURL"
           source: |
             curl -X DELETE \
             https://BASE_URL/api/maaffiliation/id \
             -H 'Accept: application/json, text/plain, */*' \
             -H 'Authorization: Bearer TOKEN_PUBLICO  \   
             -H 'Content-Type: application/json,application/json' \   
-            -H 'Host: BASE_URL' \   
-        - lang: 'PHP'
+            -H 'Host: BASE_URL' \
+        - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
               $body = $client->request('DELETE', 'https:// [base URL]/api/maclient/madb93fc00a2cf6f4449', [                 
@@ -2715,7 +3147,7 @@ paths:
                     'Authorization' => 'Bearer 8c872egfdg996f8b418c872e996f8b418c872e996f8b41'              ]           
                   ])->getBody();           
                 $response = json_decode($body);
-        - lang: 'JS'
+        - lang: "JS"
           source: |
             const request = async () => {
               const response = await fetch('https://[base URL]/api/maaffiliation/sucaab7865dceaff49d8b3', {
@@ -2738,24 +3170,24 @@ components:
       type: object
       properties:
         status:
-          description: Client status.  
+          description: Client status.
           type: string
           example: "active"
         id:
           type: string
-          description: Identifier of the transaction created by payku. 
-          example: 'cl0be4c8e623c167bc8b29'
+          description: Identifier of the transaction created by payku.
+          example: "cl0be4c8e623c167bc8b29"
         name:
           type: string
-          description: Client name. 
-          example: 'Joe Doe'
+          description: Client name.
+          example: "Joe Doe"
         phone:
           type: string
-          description: Client phone. 
+          description: Client phone.
           example: "923122312"
         email:
           type: string
-          description: Client email. 
+          description: Client email.
           example: "joedoe@gmail.com"
         address:
           description: Client address.
@@ -2769,26 +3201,26 @@ components:
           description: Client region.
           type: string
           example: "Metropolitana"
-        city: 
+        city:
           description: Client city.
           type: string
           example: "Santiago"
         postal_code:
-          description: Client Zip Code.  
+          description: Client Zip Code.
           type: string
           example: "850000"
         create_at:
-          description: Registration date.  
+          description: Registration date.
           type: string
           example: "2020-09-29"
           format: datetime
         update_at:
-          description: Update date.  
+          description: Update date.
           type: string
           example: null
           format: datetime
         subcriptions:
-          description: Client subscriptions.  
+          description: Client subscriptions.
           type: object
           example: null
 
@@ -2797,30 +3229,30 @@ components:
       type: object
       properties:
         status:
-          description: Client status.  
+          description: Client status.
           type: string
           example: "active"
         id:
           type: string
-          description: Identifier of the transaction created by payku. 
-          example: 'cl0be4c8e623c167bc8b29'
+          description: Identifier of the transaction created by payku.
+          example: "cl0be4c8e623c167bc8b29"
         name:
           type: string
-          description: Client name. 
-          example: 'Joe Doe'
+          description: Client name.
+          example: "Joe Doe"
         phone:
           type: string
-          description: Client phone. 
+          description: Client phone.
           example: "923122312"
         email:
           type: string
-          description: Client email. 
+          description: Client email.
           example: "joedoe@gmail.com"
         address:
           description: Client address.
           type: string
           example: "Moneda 101"
-        city: 
+        city:
           description: Client city.
           type: string
           example: "Santiago"
@@ -2833,16 +3265,16 @@ components:
           type: string
           example: "Chile"
         postal_code:
-          description: Client Zip Code.  
+          description: Client Zip Code.
           type: string
           example: "850000"
         create_at:
-          description: Registration date.  
+          description: Registration date.
           type: string
           example: "2020-09-29"
           format: datetime
         update_at:
-          description: Update date.  
+          description: Update date.
           type: string
           example: null
           format: datetime
@@ -2855,7 +3287,7 @@ components:
                 type: object
                 properties:
                   id:
-                    description: Identifier of the plan created by payku. 
+                    description: Identifier of the plan created by payku.
                     type: string
                     example: "pl9697fb170834ad42dd00"
                   name:
@@ -2863,7 +3295,7 @@ components:
                     type: string
                     example: "test plan"
                   currency:
-                    description: Currency.  
+                    description: Currency.
                     type: string
                     example: "CPL"
             cards:
@@ -2872,12 +3304,12 @@ components:
                 type: object
                 properties:
                   last_4_digits:
-                    description: Last 4 digits of the affiliated card. 
+                    description: Last 4 digits of the affiliated card.
                     type: string
                     example: "6622"
                   card_type:
                     description: Card type.
-                    type: string  
+                    type: string
                     example: "Visa"
             transactions:
               type: array
@@ -2885,15 +3317,15 @@ components:
                 type: object
                 properties:
                   created_at:
-                    description: Transaction creation date. 
+                    description: Transaction creation date.
                     type: string
                     example: "2020-09-30 19:58:35"
                   amount:
                     description: Transaction amount.
-                    type: string  
+                    type: string
                     example: "10000"
                   transaction:
-                    description: Transaction number. 
+                    description: Transaction number.
                     type: string
                     example: "204444"
                   authorization_code:
@@ -2901,16 +3333,16 @@ components:
                     type: string
                     example: "1234"
                   order:
-                    description: Number of order. 
+                    description: Number of order.
                     type: string
                     example: "001"
                   description:
                     description: Description.
-                    type: string 
-                    example: "descripcion"  
+                    type: string
+                    example: "descripcion"
                   status:
                     description: Transaction status.
-                    type: string 
+                    type: string
                     example: "success"
 
     ModifyClientResponse:
@@ -2918,30 +3350,30 @@ components:
       type: object
       properties:
         status:
-          description: Client status.  
+          description: Client status.
           type: string
           example: "active"
         id:
           type: string
-          description: Transaction identifier created by payku. 
-          example: 'cl0be4c8e623c167bc8b29'
+          description: Transaction identifier created by payku.
+          example: "cl0be4c8e623c167bc8b29"
         name:
           type: string
-          description: Client name. 
-          example: 'Joe Doe Doe'
+          description: Client name.
+          example: "Joe Doe Doe"
         phone:
           type: string
-          description: Client phone. 
+          description: Client phone.
           example: "923122312"
         email:
           type: string
-          description: Client email. 
+          description: Client email.
           example: "joedoe@gmail.com"
         address:
           description: Client address.
           type: string
           example: "Moneda 121"
-        city: 
+        city:
           description: Client city.
           type: string
           example: "Santiago"
@@ -2954,22 +3386,22 @@ components:
           type: string
           example: "Chile"
         postal_code:
-          description: Client Zip Code.  
+          description: Client Zip Code.
           type: string
           example: "750000"
         create_at:
-          description: Registration date.  
+          description: Registration date.
           type: string
           example: "2020-09-29"
           format: datetime
         update_at:
-          description: Update date.  
+          description: Update date.
           type: string
           example: "2020-10-2 08:32:52"
           format: datetime
         subcriptions:
           type: object
-          description: Client subscriptions.  
+          description: Client subscriptions.
           example: null
 
     DeleteClientResponse:
@@ -2978,12 +3410,12 @@ components:
       properties:
         status:
           type: string
-          description: Client status. 
-          example: 'success'
+          description: Client status.
+          example: "success"
         id:
           type: string
-          description: Transaction identifier created by payku. 
-          example: 'cl0be4c8e623c167bc8b29'
+          description: Transaction identifier created by payku.
+          example: "cl0be4c8e623c167bc8b29"
 
     DeleteClientMarketResponse:
       description: "Return data deleting a client"
@@ -2991,40 +3423,38 @@ components:
       properties:
         status:
           type: string
-          description: Client status. 
-          example: 'suspended'
+          description: Client status.
+          example: "suspended"
         id:
           type: string
-          description: Transaction identifier created by payku. 
-          example: 'madb93fc00a2cf6f4449'
-        
+          description: Transaction identifier created by payku.
+          example: "madb93fc00a2cf6f4449"
+
     DeleteAffiliationResponse:
       description: "Return data deleting a membership"
       type: object
       properties:
         status:
           type: string
-          description: Membership status. 
-          example: 'suspended'
+          description: Membership status.
+          example: "suspended"
         id:
           type: string
           description: Transaction identifier created by payku.
-          example: 'eecd92fdbb8bf615e821'
-        
-        
+          example: "eecd92fdbb8bf615e821"
+
     PlanResponse:
       description: "Return data from inserting a plan"
       type: object
       properties:
         status:
           type: string
-          description: Status. 
-          example: 'success'
+          description: Status.
+          example: "success"
         id:
           type: string
-          description: Unique plan identifier per payku. 
-          example: 'pl4293e97a87195bb9edcd'
-        
+          description: Unique plan identifier per payku.
+          example: "pl4293e97a87195bb9edcd"
 
     DeleteSuscriptionResponse:
       description: "Return data from the deletion of a subscription"
@@ -3032,29 +3462,29 @@ components:
       properties:
         id:
           type: string
-          description: Transaction identifier created by payku. 
-          example: 'sucaab7865dceaff49d8b3'
+          description: Transaction identifier created by payku.
+          example: "sucaab7865dceaff49d8b3"
         status:
           type: string
-          description: Status. 
-          example: 'success'
-    
+          description: Status.
+          example: "success"
+
     CreateSuscriptionResponse:
       description: "Return data from the insertion of data from a subscription"
       type: object
       properties:
         status:
           type: string
-          description: Status. 
-          example: 'register'
+          description: Status.
+          example: "register"
         id:
           type: string
-          description: Unique subscription identifier for payku. 
-          example: 'sucaab7865dceaff49d8b3'
+          description: Unique subscription identifier for payku.
+          example: "sucaab7865dceaff49d8b3"
         url:
           type: string
-          description: Url payment and subscription activation. 
-          example: 'http://app.payku.cl/gateway/registrosuscripcion?tipoplan=2&plan=true&token=219&valida cion=e6c50ba0e0'
+          description: Url payment and subscription activation.
+          example: "http://app.payku.cl/gateway/registrosuscripcion?tipoplan=2&plan=true&token=219&valida cion=e6c50ba0e0"
 
     PlanIdResponse:
       description: "Plan query return data by id"
@@ -3062,17 +3492,17 @@ components:
       properties:
         status:
           type: string
-          description: Status. 
-          example: 'success'
+          description: Status.
+          example: "success"
         plans:
           type: object
           properties:
             id:
-              description: Unique plan identifier per payku. 
+              description: Unique plan identifier per payku.
               type: string
               example: "pl4293e97a87195bb9edcd"
             status:
-              description: Plan status. 
+              description: Plan status.
               type: string
               example: "active"
             name:
@@ -3112,19 +3542,19 @@ components:
       properties:
         status:
           type: string
-          description: Status. 
-          example: 'success'
+          description: Status.
+          example: "success"
         plans:
           type: array
           items:
             type: object
             properties:
               id:
-                description: Unique plan identifier per payku. 
+                description: Unique plan identifier per payku.
                 type: string
                 example: "pl4293e97a87195bb9edcd"
               status:
-                description: Plan status. 
+                description: Plan status.
                 type: string
                 example: "active"
               name:
@@ -3206,12 +3636,12 @@ components:
       properties:
         status:
           type: string
-          description: Subscription status. 
-          example: 'register'
+          description: Subscription status.
+          example: "register"
         id:
           type: string
-          description: Subscription identifier created by payku. 
-          example: 'sucaab7865dceaff49d8b7'
+          description: Subscription identifier created by payku.
+          example: "sucaab7865dceaff49d8b7"
         client:
           type: object
           properties:
@@ -3257,12 +3687,12 @@ components:
           type: object
           properties:
             last_4_digits:
-              description: Last 4 digits of the affiliated card. 
+              description: Last 4 digits of the affiliated card.
               type: string
               example: "6622"
             card_type:
               description: Card type.
-              type: string  
+              type: string
               example: "Visa"
         transactions:
           type: array
@@ -3273,15 +3703,15 @@ components:
       properties:
         status:
           type: string
-          description: Transaction status. 
-          example: 'register'
+          description: Transaction status.
+          example: "register"
         id:
           type: string
-          description: Transaction identifier created by payku. 
-          example: 'clasd12319715c30002ab3ba4dab'
+          description: Transaction identifier created by payku.
+          example: "clasd12319715c30002ab3ba4dab"
         url:
           type: string
-          description: URL to redirect the user. 
+          description: URL to redirect the user.
           example: "https://BASE-URL/url_de_pago"
 
     IdentifierResponse:
@@ -3290,38 +3720,38 @@ components:
       properties:
         status:
           type: string
-          description: Transaction status. 
+          description: Transaction status.
           example: "success"
         id:
           type: string
-          description: Transaction identifier created by Payku. 
-          example: '10ac494c1d8da71d98ea'
+          description: Transaction identifier created by Payku.
+          example: "10ac494c1d8da71d98ea"
         created_at:
           type: string
-          description: Registration date. 
-          example: '2019-10-25 14:10:03'
+          description: Registration date.
+          example: "2019-10-25 14:10:03"
         order:
           type: string
-          description: Number of order. 
-          example: '1572023402'
+          description: Number of order.
+          example: "1572023402"
         email:
           type: string
-          description: Client email. 
-          example: 'alex@onequark.com'
+          description: Client email.
+          example: "alex@onequark.com"
         subject:
           type: string
-          description: Description of the purchase order. 
-          example: '1572023402'
+          description: Description of the purchase order.
+          example: "1572023402"
         amount:
           type: string
-          description: Amount. 
-          example: '98745'
+          description: Amount.
+          example: "98745"
         payment:
           type: object
           properties:
             media:
               type: string
-              description: Payment method, used by the user. 
+              description: Payment method, used by the user.
               example: "Webpay"
             authorization_code:
               type: string
@@ -3329,26 +3759,26 @@ components:
               example: "107742"
             transaction_id:
               type: string
-              description: Identifier of the transaction created by payku. 
+              description: Identifier of the transaction created by payku.
               example: "107999"
             verification_key:
               type: string
-              description: Verification code created by Payku. 
+              description: Verification code created by Payku.
               example: "6669cbd982ef54c28f2f15fb9dc5262d"
             last_4_digits:
               type: string
-              description: Last 4 digits of the affiliated card. 
+              description: Last 4 digits of the affiliated card.
               example: "1233"
             card_type:
               type: string
-              description: Card type. 
+              description: Card type.
               example: ""
             additional:
-              type: string 
+              type: string
               example: ""
             currency:
               type: string
-              description: Currency. 
+              description: Currency.
               example: "CLP"
 
     VerificationResponse:
@@ -3357,26 +3787,27 @@ components:
       properties:
         order:
           type: string
-          description: Transaction identifier created by payku. 
-          example: '9123123'
+          description: Transaction identifier created by payku.
+          example: "9123123"
         status:
           type: string
-          description: Successful validation = You will receive the string 'VALID'.
-                        Validation rejected = You will receive different than 'INVALID'.
+          description:
+            Successful validation = You will receive the string 'VALID'.
+            Validation rejected = You will receive different than 'INVALID'.
           example: "VALID"
-    
+
     EventCreateResponse:
       description: "Return data from creating an event"
       type: object
       properties:
         status:
           type: string
-          description: Request status. 
-          example: 'success'
+          description: Request status.
+          example: "success"
         id:
           type: string
-          description: Event id. 
-          example: '98374'
+          description: Event id.
+          example: "98374"
         event:
           type: string
           description: Event name.
@@ -3466,8 +3897,8 @@ components:
       properties:
         id:
           type: string
-          description: Event identifier. 
-          example: '98374'
+          description: Event identifier.
+          example: "98374"
         event:
           type: string
           description: Event name.
@@ -3556,7 +3987,7 @@ components:
       type: object
       properties:
         id:
-          description: Identifier created by payku. 
+          description: Identifier created by payku.
           type: string
           example: "madb93fc00a2cf6f4449"
         status:
@@ -3584,7 +4015,7 @@ components:
               type: string
               example: "1234"
             type:
-              description: | 
+              description: |
                 Account type.
                 - 1 Checking account
                 - 2 = Vista/Cuenta RUT
@@ -3595,7 +4026,7 @@ components:
               description: Client's account number.
               type: string
               example: "12312313121"
-            rut: 
+            rut:
               description: Single Tax Registry.
               type: string
               example: "111111111"
@@ -3619,7 +4050,7 @@ components:
       type: object
       properties:
         id:
-          description: Unique subscription identifier for payku. 
+          description: Unique subscription identifier for payku.
           type: string
           example: "sucaab7865dceaff49d8b3"
         status:
@@ -3662,15 +4093,15 @@ components:
       properties:
         status:
           type: string
-          description: Transaction status. 
-          example: 'register'
+          description: Transaction status.
+          example: "register"
         id:
           type: string
-          description: Transaction identifier created by payku. 
-          example: 'malld200058ab44739ddee2adcd2f5'
+          description: Transaction identifier created by payku.
+          example: "malld200058ab44739ddee2adcd2f5"
         url:
           type: string
-          description: URL has redirect user. 
+          description: URL has redirect user.
           example: "https://[base URL]/gateway/mall/malld200058ab44739ddee2adcd2f5"
 
     IdentifierMallResponse:
@@ -3679,49 +4110,49 @@ components:
       properties:
         status:
           type: string
-          description: Transaction status. 
+          description: Transaction status.
           example: "success"
         id:
           type: string
-          description: Transaction identifier created by Payku. 
-          example: 'malld200058ab44739ddee2adcd2f5'
+          description: Transaction identifier created by Payku.
+          example: "malld200058ab44739ddee2adcd2f5"
         created_at:
           type: string
-          description: Registration date. 
-          example: '2020-10-16 11:23:19'
+          description: Registration date.
+          example: "2020-10-16 11:23:19"
         amount:
           type: string
-          description: Amount. 
-          example: '30000'
+          description: Amount.
+          example: "30000"
         payment:
           type: object
           properties:
             media:
               type: string
-              description: Payment method, used by the client. 
+              description: Payment method, used by the client.
               example: "Webpay"
             verification_key:
               type: string
-              description: Verification code created by Payku. 
+              description: Verification code created by Payku.
               example: "d60aaa661ea74d824373806c8aa38137"
             authorization_code:
               type: string
-              description: Authorization code. 
+              description: Authorization code.
               example: "441864"
             last_4_digits:
               type: string
-              description: Last 4 digits of the affiliated card. 
+              description: Last 4 digits of the affiliated card.
               example: "5135"
             card_type:
               type: string
-              description: Card type. 
+              description: Card type.
               example: ""
             additional:
-              type: string 
+              type: string
               example: ""
             currency:
               type: string
-              description: Currency. 
+              description: Currency.
               example: "CLP"
 
     customerPostResponse:
@@ -3730,15 +4161,15 @@ components:
       properties:
         status:
           type: string
-          description: Status of the request. 
-          example: 'success'
+          description: Status of the request.
+          example: "success"
         usuario:
           type: string
-          description: User identifier. 
-          example: 'us500f77e28752dc937e7d'
+          description: User identifier.
+          example: "us500f77e28752dc937e7d"
         cuenta:
           type: string
-          description: Account identifier.  
+          description: Account identifier.
           example: "cu245a17e00f7ce3715f5a"
 
     Error:
@@ -3756,7 +4187,7 @@ components:
           type: string
           description: Error message.
           example: Array\n(\n    [order] => invalid\n)\n
-    
+
     Error400:
       type: object
       properties:
@@ -3772,7 +4203,7 @@ components:
           type: string
           description: Error message.
           example: Array\n(\n    [order] => invalid\n)\n
-    
+
     Error400Event:
       type: object
       properties:
@@ -3804,7 +4235,7 @@ components:
           type: string
           description: Error message.
           example: Array\n(\n    [id] => is Empty\n)\n
-    
+
     Error401:
       type: object
       properties:
@@ -3819,7 +4250,7 @@ components:
               type: string
               description: Error message.
               example: waiting token public
-    
+
     Error404:
       type: object
       properties:
