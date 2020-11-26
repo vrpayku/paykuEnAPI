@@ -45,7 +45,7 @@ info:
     Once the character sets are ordered and concatenated, the hash is calculated 
     using the HMAC function with encryption type sha256, and the private token.
 
-    ### PHP Example:
+    ### PHP Example
     API Endpoint:
     ```php
     $request_path = urlencode('/api/transaction')
@@ -83,6 +83,48 @@ info:
     ```php
     $sign = hash_hmac('sha256', $concat, '79c5481cffd3ecbd0c8ade5e5b5fc2c6'),
     ```
+
+    ### JavaScript Example
+    Import CryptoJS dependency:
+    ```js
+    const CryptoJS = require("crypto-js");
+    ```
+    API Endpoint:
+    ```js
+    const requestPath = encodeURIComponent('/api/transaction');
+    ```
+    Sorting the parameters:
+    ```js
+    const data = {
+      email: 'joedoe@gmail.com',     
+      urlreturn: 'https://you_website/url_return',     
+      urlnotify: 'https://you_website/url_notify',     
+      order:  1234,     
+      subject: 'order description test',     
+      amount: 98745,     
+      payment: 1
+    };
+    const orderedData = {};
+    Object.keys(data).sort().forEach(function(key) {
+      orderedData[key] = data[key];
+    });
+    ```
+    Transformation of the parameters to url format:
+    ```js
+    const arrayConcat = new URLSearchParams(orderedData).toString();
+    ```
+    Concatenation of the parameters in url format with the API endpoint:
+    ```js
+    const concat = requestPath + "&" + arrayConcat;
+    ```
+    Sign:
+    ```js
+    const sign = CryptoJS.HmacSHA256(concat, "79c5481cffd3ecbd0c8ade5e5b5fc2c6");
+    ```
+
+    The result of the signature obtained for both examples is:
+
+    61e2ddcb4e01cf9bc9cc0c87c8a0112265f5001ecf693d12a410e2e8885fd31d
 
     # Errors
     Payku uses conventional HTTP responses to indicate the success or failure of a request.
@@ -689,7 +731,7 @@ paths:
                 "banco_titular": "Joe Doe",
                 "banco_numerocuenta": "1122334455",
                 "banco_tipocuenta": "1",
-                "banco_codigo": "001"
+                "banco_codigo": "0001"
               }'
         - lang: "PHP"
           source: |
@@ -704,7 +746,7 @@ paths:
                   'banco_titular'      => 'Joe Doe',
                   'banco_numerocuenta' => '1122334455',
                   'banco_tipocuenta'   => '1',
-                  'banco_codigo'       => '001',
+                  'banco_codigo'       => '0001',
                 ];
               ])->getBody();           
             $response = json_decode($body);
@@ -733,7 +775,7 @@ paths:
               "banco_titular": "Joe Doe",
               "banco_numerocuenta": "1122334455",
               "banco_tipocuenta": "1",
-              "banco_codigo": "001"
+              "banco_codigo": "0001"
             };
 
             request(data);
@@ -783,26 +825,26 @@ paths:
                 banco_codigo:
                   description: |
                     Bank code to which the bank account belongs.
-                    - 001 Banco de Chile
-                    - 009 Banco Internacional
-                    - 014 Scotiabank Chile
-                    - 016 Banco de crédito e inversiones (BCI)
-                    - 027 Banco Corpbanca
-                    - 028 Banco Bice
-                    - 031 HSBC Bank Chile
-                    - 037 Banco Santander Chile
-                    - 039 Itaú Corpbanca
-                    - 049 Banco Security
-                    - 051 Banco Falabella
-                    - 053 Banco Ripley
-                    - 054 Rabobank Chile
-                    - 055 Banco Consorcio
-                    - 056 Banco Penta
-                    - 057 Banco Paris
-                    - 504 Banco Bilbao Vizcaya Argentaria Chile (BBVA)
-                    - 059 Banco BTG Pactual Chile
+                    - 0001 Banco de Chile
+                    - 0009 Banco Internacional
+                    - 0014 Scotiabank Chile
+                    - 0016 Banco de crédito e inversiones (BCI)
+                    - 0027 Banco Corpbanca
+                    - 0028 Banco Bice
+                    - 0031 HSBC Bank Chile
+                    - 0037 Banco Santander Chile
+                    - 0039 Itaú Corpbanca
+                    - 0049 Banco Security
+                    - 0051 Banco Falabella
+                    - 0053 Banco Ripley
+                    - 0054 Rabobank Chile
+                    - 0055 Banco Consorcio
+                    - 0056 Banco Penta
+                    - 0057 Banco Paris
+                    - 0504 Banco Bilbao Vizcaya Argentaria Chile (BBVA)
+                    - 0059 Banco BTG Pactual Chile
                   type: string
-                  example: "001"
+                  example: "0001"
               required:
                 - email
                 - first_name
@@ -2816,9 +2858,28 @@ paths:
                   type: object
                   properties:
                     sbif:
-                      description: Bank code.
+                      description: |
+                        Bank code to which the bank account belongs.
+                        - 0001 Banco de Chile
+                        - 0009 Banco Internacional
+                        - 0014 Scotiabank Chile
+                        - 0016 Banco de crédito e inversiones (BCI)
+                        - 0027 Banco Corpbanca
+                        - 0028 Banco Bice
+                        - 0031 HSBC Bank Chile
+                        - 0037 Banco Santander Chile
+                        - 0039 Itaú Corpbanca
+                        - 0049 Banco Security
+                        - 0051 Banco Falabella
+                        - 0053 Banco Ripley
+                        - 0054 Rabobank Chile
+                        - 0055 Banco Consorcio
+                        - 0056 Banco Penta
+                        - 0057 Banco Paris
+                        - 0504 Banco Bilbao Vizcaya Argentaria Chile (BBVA)
+                        - 0059 Banco BTG Pactual Chile
                       type: string
-                      example: "1234"
+                      example: "0001"
                     type:
                       description: |
                         Account type.
@@ -3012,10 +3073,7 @@ paths:
                 "name": "name",
                 "percentage": "20",
                 "affiliation": [
-                  {
-                    "id": "ma9fd16221a9645b0036",
-                    "percentage": "80"
-                  }
+                  ["ma9fd16221a9645b0036","80"]
                 ]
               }'
         - lang: "PHP"
@@ -3053,10 +3111,7 @@ paths:
               name: "name",
               percentage: "20",
               affiliation: [
-                {
-                  id: "ma9fd16221a9645b0036",
-                  percentage: "80"
-                }
+                ["ma9fd16221a9645b0036","80"]
               ]
             };
 
@@ -3077,20 +3132,9 @@ paths:
                   example: "20"
                 affiliation:
                   type: array
-                  items:
-                    type: object
-                    properties:
-                      id:
-                        description: Client identifier created by payku.
-                        type: string
-                        example: "ma9fd16221a9645b0036"
-                      percentage:
-                        description: Percentage.
-                        type: string
-                        example: "80"
-                    required:
-                      - id
-                      - percentage
+                  description: Array containing customers, each customer is an array containing a customer identifier created by payku and the percentage that it will get.
+                  example:
+                    - ["madb93fc00a2cf6f4449", "80"]
               required:
                 - name
                 - percentage
