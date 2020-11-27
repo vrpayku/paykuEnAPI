@@ -86,15 +86,15 @@ info:
 
     ### JavaScript Example
     Import CryptoJS dependency:
-    ```js
+    ```javascript
     const CryptoJS = require("crypto-js");
     ```
     API Endpoint:
-    ```js
+    ```javascript
     const requestPath = encodeURIComponent('/api/transaction');
     ```
     Sorting the parameters:
-    ```js
+    ```javascript
     const data = {
       email: 'joedoe@gmail.com',     
       urlreturn: 'https://you_website/url_return',     
@@ -110,21 +110,23 @@ info:
     });
     ```
     Transformation of the parameters to url format:
-    ```js
+    ```javascript
     const arrayConcat = new URLSearchParams(orderedData).toString();
     ```
     Concatenation of the parameters in url format with the API endpoint:
-    ```js
+    ```javascript
     const concat = requestPath + "&" + arrayConcat;
     ```
     Sign:
-    ```js
+    ```javascript
     const sign = CryptoJS.HmacSHA256(concat, "79c5481cffd3ecbd0c8ade5e5b5fc2c6");
     ```
 
     The result of the signature obtained for both examples is:
 
-    61e2ddcb4e01cf9bc9cc0c87c8a0112265f5001ecf693d12a410e2e8885fd31d
+    ```javascript
+    "61e2ddcb4e01cf9bc9cc0c87c8a0112265f5001ecf693d12a410e2e8885fd31d"
+    ```
 
     # Errors
     Payku uses conventional HTTP responses to indicate the success or failure of a request.
