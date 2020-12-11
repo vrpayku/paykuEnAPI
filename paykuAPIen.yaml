@@ -2326,6 +2326,10 @@ paths:
                   type: string
                   format: url
                   example: https://you_web_site/urlnotify
+                marketplace:
+                  description: Mandatory attribute to make transactions to Marketplace affiliation, this consists of the token of the marketplace affiliation to which you want to carry out the transaction.
+                  type: string
+                  example: c1c879f4862d393ea6b326a313022dd98f0baa2869d3e9095c124199c9941030
               required:
                 - email
                 - order
