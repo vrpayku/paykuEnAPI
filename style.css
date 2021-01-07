@@ -5,10 +5,10 @@ ul {
 .hDtdNU {
   width: 70% !important;
   margin: 1rem auto !important;
-
 }
 
-.brEFsR, .eIeJha {
+.brEFsR,
+.eIeJha {
   background: #21273d !important;
 }
 
@@ -20,7 +20,8 @@ ul {
   background: #1b2032 !important;
 }
 
-.hHuJoM > .react-tabs__tab-panel, .bmoWQk pre {
+.hHuJoM > .react-tabs__tab-panel,
+.bmoWQk pre {
   background: #1b2032 !important;
 }
 
@@ -53,8 +54,11 @@ ul {
 }
 
 .center {
-  margin-left:auto; 
-  margin-right:auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.smallTable {
   width: 60% !important;
 }
 
@@ -68,4 +72,12 @@ ul {
   width: 60%;
   background-color: white;
   text-align: center;
+}
+
+.displayNone {
+  display: none !important;
+}
+
+.gza-dof {
+  background: #21273d !important;
 }

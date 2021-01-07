@@ -6,6 +6,7 @@ servers:
     description: Sandbox server
 info:
   description: |
+    Select the language of the documentation: <a href="https://docs.payku.cl/">ES</a> | EN
 
     # Introduction
     Welcome to the Payku API. You can use our API to access the different
@@ -33,7 +34,7 @@ info:
       - Authorization: Bearer **TOKEN-PÚBLICO**
 
     # Signature
-    In the case of the subscription, Mall and Customer API, an additional layer of security was added 
+    In the case of the subscription and Mall API, an additional layer of security was added 
     through of a signature that is sent in the request header, to obtain said signature
     is necessary the following:
 
@@ -54,8 +55,8 @@ info:
     ```php
     $data = [
       'email' => 'joedoe@gmail.com',     
-      'urlreturn' => 'https://you_website/url_return',     
-      'urlnotify' => 'https://you_website/url_notify',     
+      'urlreturn' => 'https://youwebsite.com/urlreturn?orderClient=123',     
+      'urlnotify' => 'https://youwebsite.com/urlnotify?orderClient=123',     
       'order' =>  1234,     
       'subject'  => 'order description test',     
       'amount' => 98745,     
@@ -97,8 +98,8 @@ info:
     ```javascript
     const data = {
       email: 'joedoe@gmail.com',     
-      urlreturn: 'https://you_website/url_return',     
-      urlnotify: 'https://you_website/url_notify',     
+      urlreturn: 'https://youwebsite.com/urlreturn?orderClient=123',     
+      urlnotify: 'https://youwebsite.com/urlnotify?orderClient=123',     
       order:  1234,     
       subject: 'order description test',     
       amount: 98745,     
@@ -119,7 +120,7 @@ info:
     ```
     Sign:
     ```javascript
-    const sign = CryptoJS.HmacSHA256(concat, "79c5481cffd3ecbd0c8ade5e5b5fc2c6");
+    const sign = CryptoJS.HmacSHA256(concat, "79c5481cffd3ecbd0c8ade5e5b5fc2c6").toString();
     ```
 
     The result of the signature obtained for both examples is:
@@ -214,7 +215,7 @@ info:
     If you have a payku account, you can access the REST API through the following endpoints:
 
     <div class="content">
-      <table class="center">
+      <table class="center smallTable">
         <thead>
           <tr>
             <th style="text-align:center;"><strong>Site</strong></th>
@@ -228,7 +229,7 @@ info:
           </tr>
           <tr>
             <td><strong>Sandbox</strong></td>
-            <td><a href="https://[base URL]/api">https://[base URL]/api</a></td>
+            <td><a href="https://des.payku.cl/api">https://des.payku.cl/api</a></td>
           </tr>
         </tbody>
       </table>
@@ -236,6 +237,46 @@ info:
 
     -	Production: provides direct access to generate actual transactions.
     - Sandbox: allows you to test your integration without affecting the actual data.
+
+    # Test transactions with Webpay
+
+    For Webpay transactions in this environment these cards must be used:
+
+    <div class="content">
+      <table class="center">
+        <thead>
+          <tr>
+            <th style="text-align:center; width:25%"><strong>Card type</strong></th>
+            <th style="text-align:center; width:37.5%"><strong>Description</strong></th>
+            <th style="text-align:center; width:37.5%"><strong>Result</strong></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>VISA</td>
+            <td align="center">4051 8856 0044 6623 CVV 123 any expiration date</td>
+            <td align="center">Generate approved transactions.</td>
+          </tr>
+          <tr>
+            <td>MASTERCARD</td>
+            <td align="center">5186 0595 5959 0568 CVV 123 any expiration date</td>
+            <td align="center">Generate declined transactions.</td>
+          </tr>
+          <tr>
+            <td>Redcompra</td>
+            <td>4051 8842 3993 7763</td>
+            <td align="center">Generates approved transactions (for operations that allow Redcompra debit and prepayment)</td>
+          </tr>
+          <tr>
+            <td>Redcompra</td>
+            <td>5186 0085 4123 3829</td>
+            <td align="center">Generates rejected transactions (for operations that allow Redcompra debit and prepayment)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    When the authentication form with RUT and password appears, RUT 11.111.111-1 and password 123 must be used.
 
   version: "1.0.0"
   title: Payku API
@@ -261,8 +302,6 @@ tags:
       It is the set of methods that will allow our users to create clients, plans, subscriptions and carry out consumer plan transactions.
 
       The main use of these methods is to make one-time charges to a customer for a service or product, such as hiring a delivery service for a product or the purchase of a particular product.
-  - name: Customer
-    description: Allows our clients to create accounts with third parties to carry out transactions.
   - name: Event
     description: It allows the creation of events and later check their status.
 
@@ -297,8 +336,8 @@ paths:
             curl -X POST \
             https://BASE_URL/api/suclient \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Sign: SIGN  \  
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Sign: SIGN'  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
             -H 'Content-Type: application/json,application/json' \   
             -H 'Host: BASE_URL' \   
             -d {     
@@ -433,8 +472,8 @@ paths:
             curl -X POST \
             https://BASE_URL/api/suplan \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Sign: SIGN  \  
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Sign: SIGN'  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
             -H 'Content-Type: application/json,application/json' \   
             -H 'Host: BASE_URL' \   
             -d {     
@@ -523,8 +562,8 @@ paths:
             curl -X POST \
             https://BASE_URL/api/sususcription \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Sign: SIGN  \  
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Sign: SIGN'  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
             -H 'Content-Type: application/json,application/json' \   
             -H 'Host: BASE_URL' \   
             -d {     
@@ -615,8 +654,8 @@ paths:
             curl -X POST \
             https://BASE_URL/api/sutransaction \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Sign: SIGN  \  
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Sign: SIGN'  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
             -H 'Content-Type: application/json,application/json' \   
             -H 'Host: BASE_URL' \   
             -d {     
@@ -686,177 +725,9 @@ paths:
                 description:
                   description: Description.
                   type: string
-                  example: Descripción
+                  example: Description
               required:
                 - suscription
-
-  /api/customer:
-    post:
-      tags:
-        - Customer
-      summary: Third party account creation.
-      description: This method allows the user to create a third party account.
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/customerPostResponse"
-        "400":
-          description: Request failed.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error400"
-        "401":
-          description: Incorrect public token.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error401"
-      x-codeSamples:
-        - lang: "CURL"
-          source: |
-            curl -X POST \
-            https://BASE_URL/api/customer \
-            -H 'Accept: application/json, text/plain, */*' \
-            -H 'Sign: SIGN  \  
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
-            -H 'Content-Type: application/json,application/json' \   
-            -H 'Host: BASE_URL' \   
-            -d {     
-                "email": "joedoe@gmail.com",
-                "first_name": "Joe",
-                "last_name": "Doe",
-                "rut": "111111111",
-                "phone": "912341234",
-                "banco_titular": "Joe Doe",
-                "banco_numerocuenta": "1122334455",
-                "banco_tipocuenta": "1",
-                "banco_codigo": "0001"
-              }'
-        - lang: "PHP"
-          source: |
-            $client = new \GuzzleHttp\Client();         
-              $body = $client->request('POST', 'https://[base URL]/api/customer', [
-                'json' =>  [
-                  'email'         => 'joedoe@gmail.com',
-                  'first_name'    => 'Joe',
-                  'last_name'     => 'Doe',
-                  'rut'           => '111111111',
-                  'phone'         => '912341234',
-                  'banco_titular'      => 'Joe Doe',
-                  'banco_numerocuenta' => '1122334455',
-                  'banco_tipocuenta'   => '1',
-                  'banco_codigo'       => '0001',
-                ];
-              ])->getBody();           
-            $response = json_decode($body);
-        - lang: "JS"
-          source: |
-            const request = async (data) => {
-              const response = await fetch('https://[base URL]/api/customer', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Sign': 'f96ddc14a73a4dd6e009db2514108a3f44832795cd5ac50e6a80fd0b0ae92112',                 
-                  'Authorization': 'Bearer 3952097d617679f98c587bad0b3a781d'  
-                },
-                body: JSON.stringify(data)
-              });
-              const result = await response.json();
-              console.log(result)
-            }
-
-            let data = {
-              "email": "joedoe@gmail.com",
-              "first_name": "Joe",
-              "last_name": "Doe",
-              "rut": "111111111",
-              "phone": "912341234",
-              "banco_titular": "Joe Doe",
-              "banco_numerocuenta": "1122334455",
-              "banco_tipocuenta": "1",
-              "banco_codigo": "0001"
-            };
-
-            request(data);
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  description: Third party email.
-                  type: string
-                  format: email
-                  example: joedoe@gmail.com
-                first_name:
-                  description: Third party first name.
-                  type: string
-                  example: Joe
-                last_name:
-                  description: Third party last name.
-                  type: string
-                  example: Doe
-                rut:
-                  description: Third party RUT.
-                  type: string
-                  example: "111111111"
-                phone:
-                  description: Third party phone.
-                  type: string
-                  example: "912341234"
-                banco_titular:
-                  description: Name of the bank account holder.
-                  type: string
-                  example: Joe Doe
-                banco_numerocuenta:
-                  description: Bank account number.
-                  type: string
-                  example: "1122334455"
-                banco_tipocuenta:
-                  description: |
-                    Bank account type.
-                    - 1 Checking account 
-                    - 2 Vista/Cuenta RUT   
-                    - 3 Saving account
-                  type: string
-                  example: "1"
-                banco_codigo:
-                  description: |
-                    Bank code to which the bank account belongs.
-                    - 0001 Banco de Chile
-                    - 0009 Banco Internacional
-                    - 0014 Scotiabank Chile
-                    - 0016 Banco de crédito e inversiones (BCI)
-                    - 0027 Banco Corpbanca
-                    - 0028 Banco Bice
-                    - 0031 HSBC Bank Chile
-                    - 0037 Banco Santander Chile
-                    - 0039 Itaú Corpbanca
-                    - 0049 Banco Security
-                    - 0051 Banco Falabella
-                    - 0053 Banco Ripley
-                    - 0054 Rabobank Chile
-                    - 0055 Banco Consorcio
-                    - 0056 Banco Penta
-                    - 0057 Banco Paris
-                    - 0504 Banco Bilbao Vizcaya Argentaria Chile (BBVA)
-                    - 0059 Banco BTG Pactual Chile
-                  type: string
-                  example: "0001"
-              required:
-                - email
-                - first_name
-                - last_name
-                - rut
-                - phone
-                - banco_titular
-                - banco_numerocuente
-                - banco_tipocuenta
-                - banco_codigo
 
   /api/mall:
     post:
@@ -888,8 +759,8 @@ paths:
             curl -X POST \
             https://BASE_URL/api/mall \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Sign: SIGN  \  
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Sign: SIGN'  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
             -H 'Content-Type: application/json,application/json' \   
             -H 'Host: BASE_URL' \   
             -d {     
@@ -901,8 +772,8 @@ paths:
                 ],
                 "payment": "1",
                 "order": 123,
-                "urlreturn": "https://youwebsite.cl/urlreturn",
-                "urlnotify": "https://youwebsite.cl/urlnotify"
+                "urlreturn": "https://youwebsite.com/urlreturn?orderClient=123",
+                "urlnotify": "https://youwebsite.com/urlnotify?orderClient=123"
               }'
         - lang: "PHP"
           source: |
@@ -1111,8 +982,8 @@ paths:
             curl -X POST \
             https://BASE_URL/api/suclient \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Sign: SIGN  \  
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Sign: SIGN'  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
             -H 'Content-Type: application/json,application/json' \   
             -H 'Host: BASE_URL' \   
             -d {     
@@ -1255,8 +1126,8 @@ paths:
             curl -X GET \
             https://BASE_URL/api/suclient/id \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Sign: SIGN  \  
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Sign: SIGN'  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
             -H 'Content-Type: application/json,application/json' \   
             -H 'Host: BASE_URL' \
         - lang: "PHP"
@@ -1323,8 +1194,8 @@ paths:
             curl -X PUT \
             https://BASE_URL/api/suclient/id \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Sign: SIGN  \  
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Sign: SIGN'  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
             -H 'Content-Type: application/json,application/json' \   
             -H 'Host: BASE_URL' \   
             -d {     
@@ -1463,8 +1334,8 @@ paths:
             curl -X DELETE \
             https://BASE_URL/api/suclient/id \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Sign: SIGN  \  
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Sign: SIGN'  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
             -H 'Content-Type: application/json,application/json' \   
             -H 'Host: BASE_URL' \
         - lang: "PHP"
@@ -1493,7 +1364,7 @@ paths:
 
             request(data);
 
-  /api/suclient/Clients:
+  /api/suclient/customers:
     get:
       tags:
         - Subscription
@@ -1523,16 +1394,16 @@ paths:
         - lang: "CURL"
           source: |
             curl -X GET \
-            https://BASE_URL/api/suclient/Clients \
+            https://BASE_URL/api/suclient/customers \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Sign: SIGN  \  
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Sign: SIGN'  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
             -H 'Content-Type: application/json,application/json' \   
             -H 'Host: BASE_URL' \
         - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
-              $body = $client->request('GET', 'https://[base URL]/api/suclient/Clients', [                      
+              $body = $client->request('GET', 'https://[base URL]/api/suclient/customers', [                      
                 'headers' => [                 
                   'Sign' => '0d04820b87c80f79a89235fcd256d9b6cddee2fc15fa50034c1903370f3de8c6',                 
                   'Authorization' => 'Bearer 8c872egfdg996f8b418c872e996f8b418c872e996f8b41'              
@@ -1542,7 +1413,7 @@ paths:
         - lang: "JS"
           source: |
             const request = async () => {
-              const response = await fetch('https://[base URL]/api/suclient/Clients', {
+              const response = await fetch('https://[base URL]/api/suclient/customers', {
                 method: 'GET',
                 headers: {
                   'Content-Type': 'application/json',
@@ -1586,8 +1457,8 @@ paths:
             curl -X POST \
             https://BASE_URL/api/sususcription \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Sign: SIGN  \  
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Sign: SIGN'  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
             -H 'Content-Type: application/json,application/json' \   
             -H 'Host: BASE_URL' \   
             -d {     
@@ -1597,7 +1468,7 @@ paths:
         - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
-              $body = $client->request('POST', 'https://[base URL]/api/ sususcription, [             
+              $body = $client->request('POST', 'https://[base URL]/api/sususcription, [             
                 'json' => [                
                   'plan' => 'pl9697fb170834ad42dd00', 
                   'client' => ' cl9b1e1dd988694f30fa30',
@@ -1648,6 +1519,68 @@ paths:
                 - plan
                 - client
 
+    get:
+      tags:
+        - Subscription
+      summary: Get all subscriptions
+      description: This method allows obtaining all the subscriptions associated with a user ID, this method allows a pagination with a maximum of 100 records per page, in addition, it has a date filter, if this parameter is not entered, the current date will be taken, for the pagination, it is necessary to add the following at the end of the endpoint? page = 1 & per_page = 100, the first parameter being the number of the page and the second the number of records per page.
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SuscriptionAllResponse"
+        "400":
+          description: Error en la solicitud.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+        "401":
+          description: Token Público incorrecto.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
+      x-codeSamples:
+        - lang: "CURL"
+          source: |
+            curl -X GET \
+            https://BASE_URL/api/suclient/customers \
+            -H 'Accept: application/json, text/plain, */*' \
+            -H 'Sign: SIGN'  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
+            -H 'Content-Type: application/json,application/json' \   
+            -H 'Host: BASE_URL' \
+        - lang: "PHP"
+          source: |
+            $client = new \GuzzleHttp\Client();         
+              $body = $client->request('GET', 'https://[base URL]/api/suclient/customers', [                      
+                'headers' => [                 
+                  'Sign' => '0d04820b87c80f79a89235fcd256d9b6cddee2fc15fa50034c1903370f3de8c6',                 
+                  'Authorization' => 'Bearer 8c872egfdg996f8b418c872e996f8b418c872e996f8b41'              
+                ]           
+              ])->getBody();           
+            $response = json_decode($body);
+        - lang: "JS"
+          source: |
+            const request = async () => {
+              const response = await fetch('https://[base URL]/api/suclient/customers', {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Sign': '0d04820b87c80f79a89235fcd256d9b6cddee2fc15fa50034c1903370f3de8c6',                 
+                  'Authorization': 'Bearer 8c872egfdg996f8b418c872e996f8b418c872e996f8b41'  
+                },
+              });
+              const result = await response.json();
+              console.log(result)
+            }
+
+            request(data);
+
   /api/sutransaction:
     post:
       tags:
@@ -1678,8 +1611,8 @@ paths:
             curl -X POST \
             https://BASE_URL/api/sutransaction \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Sign: SIGN  \  
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Sign: SIGN'  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
             -H 'Content-Type: application/json,application/json' \   
             -H 'Host: BASE_URL' \   
             -d {     
@@ -1791,8 +1724,8 @@ paths:
             curl -X GET \
             https://BASE_URL/api/sususcription/id \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Sign: SIGN  \  
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Sign: SIGN'  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
             -H 'Content-Type: application/json,application/json' \   
             -H 'Host: BASE_URL' \
         - lang: "PHP"
@@ -1858,8 +1791,8 @@ paths:
             curl -X DELETE \
             https://BASE_URL/api/sususcription/id \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Sign: SIGN  \  
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Sign: SIGN'  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
             -H 'Content-Type: application/json,application/json' \   
             -H 'Host: BASE_URL' \
         - lang: "PHP"
@@ -1918,8 +1851,8 @@ paths:
             curl -X POST \
             https://BASE_URL/api/suinscriptionscards \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Sign: SIGN  \  
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Sign: SIGN'  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
             -H 'Content-Type: application/json,application/json' \   
             -H 'Host: BASE_URL' \   
             -d {     
@@ -2001,8 +1934,8 @@ paths:
             curl -X POST \
             https://BASE_URL/api/suplan \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Sign: SIGN  \  
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Sign: SIGN'  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
             -H 'Content-Type: application/json,application/json' \   
             -H 'Host: BASE_URL' \   
             -d {     
@@ -2099,8 +2032,8 @@ paths:
             curl -X GET \
             https://BASE_URL/api/suplan/id \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Sign: SIGN  \  
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Sign: SIGN'  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
             -H 'Content-Type: application/json,application/json' \   
             -H 'Host: BASE_URL' \
         - lang: "PHP"
@@ -2160,8 +2093,8 @@ paths:
             curl -X GET \
             https://BASE_URL/api/suplan/plans \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Sign: SIGN  \  
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Sign: SIGN'  \  
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
             -H 'Content-Type: application/json,application/json' \   
             -H 'Host: BASE_URL' \
         - lang: "PHP"
@@ -2190,6 +2123,34 @@ paths:
             }
 
             request(data);
+
+  /urlnotifysuscription:
+    post:
+      tags:
+        - Subscription
+      summary: "url Callback subscription notification"
+      description: |
+        After activating the subscription by the user, payku will notify the merchant, the result of the operation (status), making a post request to the subscription notification url previously provided in the creation of the subscription and in turn deliver a series of data for internal validations by the merchant application, the subscription id which corresponds to the unique identifier in payku. This data will allow the merchant to know the status of their subscriptions and back them up in their database.
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotifySuscriptionResponse"
+
+  /urlnotifypayment:
+    post:
+      tags:
+        - Subscription
+      summary: "url Callback payment notification"
+      description: |
+        After charging the subscription automatically, payku will notify the merchant, the result of the operation (status), making a post request to the payment notification url previously provided in the creation of the subscription and in turn deliver a data series for internal validations by the merchant application, the transactionn_id which corresponds to the unique identifier in payku and a verification_key, which corresponds to a unique validation hash per transaction. These data will allow the merchant to know the status of their transactions and back them up in their database.
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotifyPaymentResponse"
 
   /api/transaction:
     post:
@@ -2223,17 +2184,17 @@ paths:
             curl -X POST \
             https://BASE-URL/api/transaction \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Authorization: Bearer TOKEN-PUBLICO \
+            -H 'Authorization: Bearer TOKEN-PUBLICO' \
             -H 'Content-Type: application/json,application/json' \
-            -H 'Host: BASE-URL \
+            -H 'Host: BASE-URL' \
             -d '{
               "email": "test@domain.com",
               "order": 5696
               "subject": "Cliente Test",
               "amount": 25000,
               "payment": 1,
-              "urlreturn": "https://you_web_site/urlreturn",
-              "urlnotify": "https://you_web_site/urlnotify"
+              "urlreturn": "https://youwebsite.com/urlreturn?orderClient=123",
+              "urlnotify": "https://youwebsite.com/urlnotify?orderClient=123"
             }'
         - lang: "PHP"
           source: |
@@ -2245,8 +2206,8 @@ paths:
                   'subject' => 'Client Test',
                   'amount' => 25000,  
                   'payment' => 1, 
-                  'urlreturn' => 'https://you_web_site/urlreturn',
-                  'urlnotify' => 'https://you_web_site/urlnotify'
+                  'urlreturn' => 'https://youwebsite.com/urlreturn?orderClient=123',
+                  'urlnotify' => 'https://youwebsite.com/urlnotify?orderClient=123'
                   ],  
                 'headers' => [                                  
                   'Authorization' => 'Bearer 8c872egfdg996f8b418c872e996f8b418c872e996f8b41'              
@@ -2274,8 +2235,8 @@ paths:
               subject: "test subject",
               amount: 25000,
               payment: 1,
-              urlreturn: "https://you_web_site/urlreturn",
-              urlnotify: "https://you_web_site/urlnotify"
+              urlreturn: "https://youwebsite.com/urlreturn?orderClient=123",
+              urlnotify: "https://youwebsite.com/urlnotify?orderClient=123"
             };
 
             request(data);
@@ -2320,16 +2281,12 @@ paths:
                   description: return url of the trade where payku will redirect the payer.
                   type: string
                   format: url
-                  example: https://you_web_site/urlreturn
+                  example: https://youwebsite.com/urlreturn?orderClient=123
                 urlnotify:
                   description: Callback url of the business where payku will notify the payment.
                   type: string
                   format: url
-                  example: https://you_web_site/urlnotify
-                marketplace:
-                  description: Mandatory attribute to make transactions to Marketplace affiliation, this consists of the token of the marketplace affiliation to which you want to carry out the transaction.
-                  type: string
-                  example: c1c879f4862d393ea6b326a313022dd98f0baa2869d3e9095c124199c9941030
+                  example: https://youwebsite.com/urlnotify?orderClient=123
               required:
                 - email
                 - order
@@ -2373,7 +2330,7 @@ paths:
             -H 'Accept: application/json, text/plain, */*' \
             -H 'Authorization: Bearer TOKEN-PUBLICO' \
             -H 'Content-Type: application/json,application/json' \
-            -H 'Host: BASE-URL ' \
+            -H 'Host: BASE-URL' \
         - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
@@ -2445,7 +2402,7 @@ paths:
             -H 'Accept: application/json, text/plain, */*' \
             -H 'Authorization: Bearer TOKEN-PUBLICO' \
             -H 'Content-Type: application/json,application/json' \
-            -H 'Host: BASE-URL ' \
+            -H 'Host: BASE-URL' \
         - lang: "PHP"
           source: |
             $client = new \GuzzleHttp\Client();         
@@ -2497,28 +2454,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error401"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                transaction_id:
-                  description: Unique identifier of transaction by Payku.
-                  type: number
-                  example: 9123123
-                verification_key:
-                  description: Unique transaction hash.
-                  type: string
-                  example: 2ba83615f863e72sdca5dfd0a6df2782
-                order:
-                  description: Unique transaction identifier sent by the merchant.
-                  type: string
-                  example: 1568041684
-              required:
-                - transaction_id
-                - verification_key
-                - order
 
   /api/event:
     post:
@@ -2550,7 +2485,7 @@ paths:
             curl -X POST \
               https://BASE_URL/api/event \
               -H 'Accept: application/json, text/plain, */*' \
-              -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+              -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
               -H 'Content-Type: application/json,application/json' \   
               -H 'Host: BASE_URL' \   
               -d {     
@@ -2721,7 +2656,7 @@ paths:
             curl -X GET \
               https://BASE_URL/api/event \
               -H 'Accept: application/json, text/plain, */*' \
-              -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+              -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
               -H 'Content-Type: application/json,application/json' \   
               -H 'Host: BASE_URL' \
         - lang: "PHP"
@@ -2779,7 +2714,7 @@ paths:
             curl -X POST \
             https://BASE_URL/api/maclient \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
             -H 'Content-Type: application/json,application/json' \   
             -H 'Host: BASE_URL' \   
             -d {     
@@ -2951,7 +2886,7 @@ paths:
             curl -X GET \
             https://BASE_URL/api/maclient/id \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
             -H 'Content-Type: application/json,application/json' \   
             -H 'Host: BASE_URL' \
         - lang: "PHP"
@@ -3015,7 +2950,7 @@ paths:
             curl -X DELETE \
             https://BASE_URL/api/maclient/id \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
             -H 'Content-Type: application/json,application/json' \   
             -H 'Host: BASE_URL' \
         - lang: "PHP"
@@ -3072,7 +3007,7 @@ paths:
             curl -X POST \
             https://BASE_URL/api/maaffiliation \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
             -H 'Content-Type: application/json,application/json' \   
             -H 'Host: BASE_URL' \   
             -d {     
@@ -3184,7 +3119,7 @@ paths:
             curl -X GET \
             https://BASE_URL/api/maaffiliation/id \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
             -H 'Content-Type: application/json,application/json' \   
             -H 'Host: BASE_URL' \
         - lang: "PHP"
@@ -3249,7 +3184,7 @@ paths:
             curl -X DELETE \
             https://BASE_URL/api/maaffiliation/id \
             -H 'Accept: application/json, text/plain, */*' \
-            -H 'Authorization: Bearer TOKEN_PUBLICO  \   
+            -H 'Authorization: Bearer TOKEN_PUBLICO'  \   
             -H 'Content-Type: application/json,application/json' \   
             -H 'Host: BASE_URL' \
         - lang: "PHP"
@@ -3276,6 +3211,153 @@ paths:
 
             request();
 
+  /api/transaction/:
+    post:
+      tags:
+        - Marketplace
+      summary: Generate a Marketplace transaction
+      description:
+        This method allows to create a payment order to **Payku** and receives as a response the **URL** to redirect the payer's browser and the **token** that identifies the transaction.
+        Once the payer makes the successful payment, **Payku** will notify the result to the page of the business that was sent in the **urlnotify** parameter.
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionResponse"
+        "400":
+          description: Request failed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+        "401":
+          description: Incorrect public token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
+      x-codeSamples:
+        - lang: "cURL"
+          source: |
+            curl -X POST \
+            https://BASE-URL/api/transaction \
+            -H 'Accept: application/json, text/plain, */*' \
+            -H 'Authorization: Bearer TOKEN-PUBLICO' \
+            -H 'Content-Type: application/json,application/json' \
+            -H 'Host: BASE-URL' \
+            -d '{
+              "email": "test@domain.com",
+              "order": 5696
+              "subject": "Cliente Test",
+              "amount": 25000,
+              "payment": 1,
+              "urlreturn": "https://youwebsite.com/urlreturn?orderClient=123",
+              "urlnotify": "https://youwebsite.com/urlnotify?orderClient=123",
+              "marketplace": "c1c879f4862d393ea6b326a313022dd98f0baa2869d3e9095c124199c9941030"
+            }'
+        - lang: "PHP"
+          source: |
+            $client = new \GuzzleHttp\Client();         
+              $body = $client->request('POST', 'https://[base URL]/api/transaction', [
+                'json' => [                
+                  'email' => 'joedoe@gmail.cl', 
+                  'order' => 98745, 
+                  'subject' => 'Client Test',
+                  'amount' => 25000,  
+                  'payment' => 1, 
+                  'urlreturn' => 'https://youwebsite.com/urlreturn?orderClient=123',
+                  'urlnotify' => 'https://youwebsite.com/urlnotify?orderClient=123',
+                  'marketplace' => 'c1c879f4862d393ea6b326a313022dd98f0baa2869d3e9095c124199c9941030'
+                  ],  
+                'headers' => [                                  
+                  'Authorization' => 'Bearer 8c872egfdg996f8b418c872e996f8b418c872e996f8b41'              
+                ]           
+              ])->getBody();           
+            $response = json_decode($body);
+        - lang: "JS"
+          source: |
+            const request = async (data) => {
+              const response = await fetch('https://[base URL]/api/transaction', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',                 
+                  'Authorization': 'Bearer 3952097d617679f98c587bad0b3a781d'  
+                },
+                body: JSON.stringify(data)
+              });
+              const result = await response.json();
+              console.log(result)
+            }
+
+            let data = {
+              email: "joedoe@gmail.com",
+              order: 98745,
+              subject: "test subject",
+              amount: 25000,
+              payment: 1,
+              urlreturn: "https://youwebsite.com/urlreturn?orderClient=123",
+              urlnotify: "https://youwebsite.com/urlnotify?orderClient=123",
+              marketplace: c1c879f4862d393ea6b326a313022dd98f0baa2869d3e9095c124199c9941030
+            };
+
+            request(data);
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  description: Client email.
+                  type: string
+                  format: email
+                  example: joedoe@gmail.com
+                order:
+                  description: Trade order.
+                  type: integer
+                  example: 98745
+                subject:
+                  description: Description of the order.
+                  type: string
+                  example: test subject
+                amount:
+                  description: Order amount.
+                  type: integer
+                  example: 25000
+                payment:
+                  description: |
+                    Identifier of the payment method. If the identifier is sent, the payer will be redirected directly to the indicated means of payment.
+                    - 1 Webpay
+                    - 2 Kiphu
+                    - 3 Multicaja Efectivo
+                    - 4 Multicaja Transferencia
+                    - 5 Onepay
+                    - 6 Pago46
+                    - 7 Sweetpay
+                    - 9 Mach
+                    - 99 Todos
+                  type: integer
+                  example: 1
+                urlreturn:
+                  description: return url of the trade where payku will redirect the payer.
+                  type: string
+                  format: url
+                  example: https://youwebsite.com/urlreturn?orderClient=123
+                urlnotify:
+                  description: Callback url of the business where payku will notify the payment.
+                  type: string
+                  format: url
+                  example: https://youwebsite.com/urlnotify?orderClient=123
+                marketplace:
+                  description: Mandatory attribute to make transactions to Marketplace affiliation, this consists of the token of the marketplace affiliation to which you want to carry out the transaction.
+                  type: string
+                  example: c1c879f4862d393ea6b326a313022dd98f0baa2869d3e9095c124199c9941030
+              required:
+                - email
+                - order
+                - subject
+                - amount
 components:
   schemas:
     AdminClientResponse:
@@ -3394,6 +3476,26 @@ components:
         subcriptions:
           type: object
           properties:
+            id:
+              description: Subscription identifier created by payku.
+              type: string
+              example: "su867f07772aa5f5175527"
+            created_at:
+              description: Registration date.
+              type: string
+              example: "2020-09-29 19:58:35"
+              format: datetime
+            status:
+              description: |
+                Subscription status. The possible statuses you can get are the following:
+                - register   
+                - active     
+                - finish   
+                - delete    
+                - cancel
+                - suspended
+              type: string
+              example: "active"
             plan:
               type: array
               items:
@@ -3410,7 +3512,7 @@ components:
                   currency:
                     description: Currency.
                     type: string
-                    example: "CPL"
+                    example: "CLP"
             cards:
               type: array
               items:
@@ -3433,6 +3535,10 @@ components:
                     description: Transaction creation date.
                     type: string
                     example: "2020-09-30 19:58:35"
+                  date_payment:
+                    description: Date the transaction was made.
+                    type: string
+                    example: "2020-09-30"
                   amount:
                     description: Transaction amount.
                     type: string
@@ -3452,9 +3558,19 @@ components:
                   description:
                     description: Description.
                     type: string
-                    example: "descripcion"
+                    example: "description"
                   status:
-                    description: Transaction status.
+                    description: |
+                      Transaction status The possible statuses you can get are the following:
+                      - pending
+                      - success
+                      - retry
+                      - canceled by customer
+                      - canceled by paymaster
+                      - canceled by payku
+                      - maximum attempt limit
+                      - first payment rejected
+                      - payment consumes failed
                     type: string
                     example: "success"
 
@@ -3514,8 +3630,104 @@ components:
           format: datetime
         subcriptions:
           type: object
-          description: Client subscriptions.
-          example: null
+          properties:
+            id:
+              description: Subscription identifier created by payku.
+              type: string
+              example: "su867f07772aa5f5175527"
+            created_at:
+              description: Registration date.
+              type: string
+              example: "2020-09-29 19:58:35"
+              format: datetime
+            status:
+              description: |
+                Subscription status. The possible statuses you can get are the following:
+                - register   
+                - active     
+                - finish   
+                - delete    
+                - cancel
+                - suspended
+              type: string
+              example: "active"
+            plan:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    description: Identifier of the plan created by payku.
+                    type: string
+                    example: "pl9697fb170834ad42dd00"
+                  name:
+                    description: Plan name.
+                    type: string
+                    example: "test plan"
+                  currency:
+                    description: currency.
+                    type: string
+                    example: "CLP"
+            cards:
+              type: array
+              items:
+                type: object
+                properties:
+                  last_4_digits:
+                    description: Last 4 digits of the affiliated card.
+                    type: string
+                    example: "6622"
+                  card_type:
+                    description: Card type.
+                    type: string
+                    example: "Visa"
+            transactions:
+              type: array
+              items:
+                type: object
+                properties:
+                  created_at:
+                    description: Transaction creation date.
+                    type: string
+                    example: "2020-09-30 19:58:35"
+                  date_payment:
+                    description: Date the transaction was made.
+                    type: string
+                    example: "2020-09-30"
+                  amount:
+                    description: Transaction amount.
+                    type: string
+                    example: "10000"
+                  transaction:
+                    description: Transaction number.
+                    type: string
+                    example: "204444"
+                  authorization_code:
+                    description: Authorization code.
+                    type: string
+                    example: "1234"
+                  order:
+                    description: Number of order.
+                    type: string
+                    example: "001"
+                  description:
+                    description: Description.
+                    type: string
+                    example: "description"
+                  status:
+                    description: |
+                      Transaction status The possible statuses you can get are the following:
+                      - pending
+                      - success
+                      - retry
+                      - canceled by customer
+                      - canceled by paymaster
+                      - canceled by payku
+                      - maximum attempt limit
+                      - first payment rejected
+                      - payment consumes failed
+                    type: string
+                    example: "success"
 
     DeleteClientResponse:
       description: "Return data deleting a client"
@@ -3597,7 +3809,7 @@ components:
         url:
           type: string
           description: Url payment and subscription activation.
-          example: "http://app.payku.cl/gateway/registrosuscripcion?tipoplan=2&plan=true&token=219&valida cion=e6c50ba0e0"
+          example: "http://app.payku.cl/gateway/registrosuscripcion?tipoplan=2&plan=true&token=219&validacion=e6c50ba0e0"
 
     PlanIdResponse:
       description: "Plan query return data by id"
@@ -3706,7 +3918,13 @@ components:
       type: object
       properties:
         status:
-          description: Transaction status.
+          description: |
+            Transaction status The possible statuses you can get are the following:
+            - pending           
+            - success           
+            - rejected         
+            - refunded partial  
+            - refunded
           type: string
           example: success
         order:
@@ -3747,14 +3965,29 @@ components:
       description: "Return data from the query of a subscription"
       type: object
       properties:
-        status:
-          type: string
-          description: Subscription status.
-          example: "register"
         id:
           type: string
           description: Subscription identifier created by payku.
           example: "sucaab7865dceaff49d8b7"
+        status:
+          type: string
+          description: |
+            Subscription status. The possible statuses you can get are the following:
+             - register   
+             - active     
+             - finish   
+             - delete    
+             - cancel
+             - suspended
+          example: "active"
+        start:
+          type: string
+          description: Subscription start date.
+          example: "2019-07-22 18:34:49"
+        end:
+          type: string
+          description: Subscription termination date.
+          example: "2020-06-12 00:00:00"
         client:
           type: object
           properties:
@@ -3795,7 +4028,7 @@ components:
             currency:
               description: Currency.
               type: string
-              example: "CPL"
+              example: "CLP"
         cards:
           type: object
           properties:
@@ -3809,6 +4042,167 @@ components:
               example: "Visa"
         transactions:
           type: array
+          items:
+            type: object
+            properties:
+              created_at:
+                description: Transaction creation date.
+                type: string
+                example: "2020-09-30 19:58:35"
+              amount:
+                description: Transaction amount.
+                type: string
+                example: "10000"
+              transaction:
+                description: Transaction number.
+                type: string
+                example: "204444"
+              authorization_code:
+                description: Authorization code.
+                type: string
+                example: "1234"
+              order:
+                description: Number of order.
+                type: string
+                example: "001"
+              description:
+                description: Description.
+                type: string
+                example: "description"
+              status:
+                description: |
+                  Transaction status The possible statuses you can get are the following:
+                  - pending           
+                  - success           
+                  - rejected         
+                  - refunded partial  
+                  - refunded
+                type: string
+                example: "success"
+
+    SuscriptionAllResponse:
+      type: object
+      properties:
+        subscriptions:
+          type: array
+          items:
+            description: "Return data from the query of all subscriptions"
+            type: object
+            properties:
+              id:
+                type: string
+                description: Subscription identifier created by payku.
+                example: "sucaab7865dceaff49d8b7"
+              status:
+                type: string
+                description: |
+                  Subscription status. The possible statuses you can get are the following:
+                  - register   
+                  - active     
+                  - finish   
+                  - delete    
+                  - cancel
+                  - suspended
+                example: "active"
+              start:
+                type: string
+                description: Subscription start date.
+                example: "2019-07-22 18:34:49"
+              end:
+                type: string
+                description: Subscription termination date.
+                example: "2020-06-12 00:00:00"
+              client:
+                type: object
+                properties:
+                  id:
+                    description: Customer identifier created by payku.
+                    type: string
+                    example: "su7e5e1c0b1bd2e37ec557"
+                  name:
+                    description: Customer name.
+                    type: string
+                    example: "name"
+                  email:
+                    description: Customer email.
+                    type: string
+                    example: "example@domain.com"
+                  rut:
+                    description: Unique Roll Tributary.
+                    type: string
+                    example: "1.111.111-1"
+                  phone:
+                    description: Customer phone.
+                    type: string
+                    example: "56928265454"
+                  parametros:
+                    description:
+                    type: array
+              plan:
+                type: object
+                properties:
+                  id:
+                    description: Identifier of the plan created by payku.
+                    type: string
+                    example: "pl9697fb170834ad42dd00"
+                  name:
+                    description: Plan name.
+                    type: string
+                    example: "test plan"
+                  currency:
+                    description: Currency.
+                    type: string
+                    example: "CLP"
+              cards:
+                type: object
+                properties:
+                  last_4_digits:
+                    description: Last 4 digits of the affiliated card.
+                    type: string
+                    example: "6622"
+                  card_type:
+                    description: Card type.
+                    type: string
+                    example: "Visa"
+              transactions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    created_at:
+                      description: Transaction creation date.
+                      type: string
+                      example: "2020-09-30 19:58:35"
+                    amount:
+                      description: Transaction amount.
+                      type: string
+                      example: "10000"
+                    transaction:
+                      description: Transaction number.
+                      type: string
+                      example: "204444"
+                    authorization_code:
+                      description: Authorization code.
+                      type: string
+                      example: "1234"
+                    order:
+                      description: Number of order.
+                      type: string
+                      example: "001"
+                    description:
+                      description: Description.
+                      type: string
+                      example: "description"
+                    status:
+                      description: |
+                        Transaction status The possible statuses you can get are the following:
+                        - pending           
+                        - success           
+                        - rejected         
+                        - refunded partial  
+                        - refunded
+                      type: string
+                      example: "success"
 
     TransactionResponse:
       description: "Return data from the creation of a transaction"
@@ -3816,8 +4210,14 @@ components:
       properties:
         status:
           type: string
-          description: Transaction status.
-          example: "register"
+          description: |
+            Transaction status The possible statuses you can get are the following:
+            - pending           
+            - success           
+            - rejected         
+            - refunded partial  
+            - refunded
+          example: "pending"
         id:
           type: string
           description: Transaction identifier created by payku.
@@ -3831,45 +4231,55 @@ components:
       description: "Status return data of a transaction"
       type: object
       properties:
-        status:
-          type: string
-          description: Transaction status.
-          example: "success"
         id:
           type: string
           description: Transaction identifier created by Payku.
           example: "10ac494c1d8da71d98ea"
+        status:
+          type: string
+          description: |
+            Transaction status The possible statuses you can get are the following:
+            - pending           
+            - success           
+            - rejected         
+            - refunded partial  
+            - refunded
+          example: "success"
         created_at:
           type: string
           description: Registration date.
           example: "2019-10-25 14:10:03"
-        order:
-          type: string
-          description: Number of order.
-          example: "1572023402"
         email:
           type: string
           description: Client email.
           example: "alex@onequark.com"
-        subject:
-          type: string
-          description: Description of the purchase order.
-          example: "1572023402"
         amount:
           type: string
           description: Amount.
           example: "98745"
+        order:
+          type: string
+          description: Number of order.
+          example: "1572023402"
+        subject:
+          type: string
+          description: Description of the purchase order.
+          example: "1572023402"
         payment:
           type: object
           properties:
+            start:
+              type: string
+              description: Inicio de la transacción.
+              example: "2020-12-16 15:10:33"
+            end:
+              type: string
+              description: Fin de la transacción.
+              example: "2020-12-16 15:10:36"
             media:
               type: string
               description: Payment method, used by the user.
               example: "Webpay"
-            authorization_code:
-              type: string
-              description: Authorization code.
-              example: "107742"
             transaction_id:
               type: string
               description: Identifier of the transaction created by payku.
@@ -3878,6 +4288,10 @@ components:
               type: string
               description: Verification code created by Payku.
               example: "6669cbd982ef54c28f2f15fb9dc5262d"
+            authorization_code:
+              type: string
+              description: Authorization code.
+              example: "107742"
             last_4_digits:
               type: string
               description: Last 4 digits of the affiliated card.
@@ -3886,13 +4300,187 @@ components:
               type: string
               description: Card type.
               example: ""
-            additional:
-              type: string
-              example: ""
             currency:
               type: string
               description: Currency.
               example: "CLP"
+            subscriptions:
+              description: "Object containing subscription information"
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Subscription identifier created by Payku.
+                  example: "su7a9bb8e59012de9e5289"
+                status:
+                  type: string
+                  description: |
+                    Subscription status. The possible statuses you can get are the following:
+                    - register   
+                    - active     
+                    - finish   
+                    - delete    
+                    - cancel
+                    - suspended
+                  example: "success"
+            gateway_response:
+              description: "Object containing transaction response information"
+              type: object
+              properties:
+                status:
+                  type: string
+                  description: |
+                    Transaction status The possible statuses you can get are the following:
+                    - pending           
+                    - success           
+                    - rejected         
+                    - refunded partial  
+                    - refunded
+                  example: "success"
+                message:
+                  type: string
+                  description: |
+                    Message describing the status.
+                      - successful transaction
+                      - Rechazo de transacción.
+                      - Transacción debe reintentarse.
+                      - Error en transacción.
+                      - Rechazo de transacción.
+                      - Rechazo por error de tasa.
+                      - Excede cupo máximo mensual.
+                      - Excede límite diario por transacción.
+                      - Rubro no autorizado.
+                  example: "successful transaction"
+
+    IdentifierAllResponse:
+      type: object
+      properties:
+        transaction:
+          type: array
+          items:
+            description: "Status return data of a transaction"
+            type: object
+            properties:
+              id:
+                type: string
+                description: Identifier of the transaction created by Payku.
+                example: "10ac494c1d8da71d98ea"
+              status:
+                type: string
+                description: |
+                  Transaction status The possible statuses you can get are the following:
+                  - pending           
+                  - success           
+                  - rejected         
+                  - refunded partial  
+                  - refunded
+                example: "success"
+              created_at:
+                type: string
+                description: Registration date.
+                example: "2019-10-25 14:10:03"
+              email:
+                type: string
+                description: User email.
+                example: "alex@onequark.com"
+              amount:
+                type: string
+                description: Amount.
+                example: "98745"
+              order:
+                type: string
+                description: Order number.
+                example: "1572023402"
+              subject:
+                type: string
+                description: Description of the purchase order.
+                example: "1572023402"
+              payment:
+                type: object
+                properties:
+                  start:
+                    type: string
+                    description: Inicio de la transacción.
+                    example: "2020-12-16 15:10:33"
+                  end:
+                    type: string
+                    description: Fin de la transacción.
+                    example: "2020-12-16 15:10:36"
+                  media:
+                    type: string
+                    description: Payment method, used by the user.
+                    example: "Webpay"
+                  transaction_id:
+                    type: string
+                    description: Identifier of the transaction created by payku.
+                    example: "107999"
+                  verification_key:
+                    type: string
+                    description: Verification code created by Payku.
+                    example: "6669cbd982ef54c28f2f15fb9dc5262d"
+                  authorization_code:
+                    type: string
+                    description: Authorization code.
+                    example: "107742"
+                  last_4_digits:
+                    type: string
+                    description: Last 4 digits of the affiliated card.
+                    example: "1233"
+                  card_type:
+                    type: string
+                    description: Card type.
+                    example: ""
+                  currency:
+                    type: string
+                    description: Currency.
+                    example: "CLP"
+                  subscriptions:
+                    description: "Object containing subscription information"
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        description: Subscription identifier created by Payku.
+                        example: "su7a9bb8e59012de9e5289"
+                      status:
+                        type: string
+                        description: |
+                          Subscription status. The possible statuses you can get are the following:
+                          - register   
+                          - active     
+                          - finish   
+                          - delete    
+                          - cancel
+                          - suspended
+                        example: "success"
+                  gateway_response:
+                    description: "Object containing transaction response information"
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        description: |
+                          Transaction status The possible statuses you can get are the following:
+                          - pending           
+                          - success           
+                          - rejected         
+                          - refunded partial  
+                          - refunded
+                        example: "success"
+                      message:
+                        type: string
+                        description: |
+                          Message describing the status.
+                            - successful transaction
+                            - Rechazo de transacción.
+                            - Transacción debe reintentarse.
+                            - Error en transacción.
+                            - Rechazo de transacción.
+                            - Rechazo por error de tasa.
+                            - Excede cupo máximo mensual.
+                            - Excede límite diario por transacción.
+                            - Rubro no autorizado.
+                        example: "successful transaction"
 
     VerificationResponse:
       description: "Return data from the creation of a transaction"
@@ -3908,6 +4496,53 @@ components:
             Successful validation = You will receive the string 'VALID'.
             Validation rejected = You will receive different than 'INVALID'.
           example: "VALID"
+
+    NotifySuscriptionResponse:
+      description: "Return data from the activation of a subscription"
+      type: object
+      properties:
+        id:
+          type: string
+          description: Subscription identifier created by Payku.
+          example: "su74866857980c7d2b4306"
+        status:
+          type: string
+          description: |
+            Subscription status. The possible statuses you can get are the following:
+            - register   
+            - active     
+            - finish   
+            - delete    
+            - cancel
+            - suspended
+          example: "active"
+
+    NotifyPaymentResponse:
+      description: "Return data from the payment of a subscription"
+      type: object
+      properties:
+        transaction_id:
+          description: Unique transaction identifier by Payku.
+          type: number
+          example: 9123123
+        verification_key:
+          description: Unique transaction hash.
+          type: string
+          example: 2ba83615f863e72sdca5dfd0a6df2782
+        order:
+          description: Unique transaction identifier sent by the merchant.
+          type: string
+          example: 1568041684
+        status:
+          type: string
+          description: |
+            Transaction status The possible statuses you can get are the following:
+            - pending           
+            - success           
+            - rejected         
+            - refunded partial  
+            - refunded
+          example: "success"
 
     EventCreateResponse:
       description: "Return data from creating an event"
@@ -4206,8 +4841,14 @@ components:
       properties:
         status:
           type: string
-          description: Transaction status.
-          example: "register"
+          description: |
+            Transaction status The possible statuses you can get are the following:
+            - pending           
+            - success           
+            - rejected         
+            - refunded partial  
+            - refunded
+          example: "success"
         id:
           type: string
           description: Transaction identifier created by payku.
@@ -4223,7 +4864,13 @@ components:
       properties:
         status:
           type: string
-          description: Transaction status.
+          description: |
+            Transaction status The possible statuses you can get are the following:
+            - pending           
+            - success           
+            - rejected         
+            - refunded partial  
+            - refunded
           example: "success"
         id:
           type: string
@@ -4259,9 +4906,6 @@ components:
             card_type:
               type: string
               description: Card type.
-              example: ""
-            additional:
-              type: string
               example: ""
             currency:
               type: string
@@ -4379,75 +5023,3 @@ components:
           type: string
           description: Id information
           example: is not valid
-
-    IdentifierAllResponse:
-      type: object
-      properties:
-        transaction:
-          type: array
-          items:
-            description: "Status return data of a transaction"
-            type: object
-            properties:
-              status:
-                type: string
-                description: Status of the transaction.
-                example: "success"
-              id:
-                type: string
-                description: Identifier of the transaction created by Payku.
-                example: "10ac494c1d8da71d98ea"
-              created_at:
-                type: string
-                description: Registration date.
-                example: "2019-10-25 14:10:03"
-              order:
-                type: string
-                description: Order number.
-                example: "1572023402"
-              email:
-                type: string
-                description: User email.
-                example: "alex@onequark.com"
-              subject:
-                type: string
-                description: Description of the purchase order.
-                example: "1572023402"
-              amount:
-                type: string
-                description: Monto.
-                example: "98745"
-              payment:
-                type: object
-                properties:
-                  media:
-                    type: string
-                    description: Payment method, used by the user.
-                    example: "Webpay"
-                  authorization_code:
-                    type: string
-                    description: Authorization code.
-                    example: "107742"
-                  transaction_id:
-                    type: string
-                    description: Transaction identifier created by Payku.
-                    example: "107999"
-                  verification_key:
-                    type: string
-                    description: Verification code created by Payku.
-                    example: "6669cbd982ef54c28f2f15fb9dc5262d"
-                  last_4_digits:
-                    type: string
-                    description: Last 4 digits of the affiliated card.
-                    example: "1233"
-                  card_type:
-                    type: string
-                    description: Card type.
-                    example: ""
-                  additional:
-                    type: string
-                    example: ""
-                  currency:
-                    type: string
-                    description: Currency.
-                    example: "CLP"
